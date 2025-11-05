@@ -1,6 +1,6 @@
 name: bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_dotenv: ^6.0.0
   flutter_screenutil: ^5.9.3
   get_it: ^9.0.5
@@ -23,5 +24,4 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-   - .env
-
+    - .env
