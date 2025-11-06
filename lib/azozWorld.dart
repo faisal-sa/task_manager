@@ -20,20 +20,22 @@
 // --------------------------------------------------------
 // Initialization git this INFO fron supabase DashBoard (place this code in your setup file):
 // await Supabase.initialize(
-//   url: 'https://your-project-id.supabase.co', 
+//   url: 'https://your-project-id.supabase.co',
 //   anonKey: 'your-anon-key',
 // );
 // --------------------------------------------------------
 
+import 'package:supabase_flutter/supabase_flutter.dart'; // you need to import the packege [supabase]
 
-import 'package:supabase_flutter/supabase_flutter.dart';  // you need to import the packege [supabase]
 final supa = Supabase.instance.client;
-
 
 class SupabaseServicePro {
   // ▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼ Insert ▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼
 
-  Future<void> insert({required String table, required Map<String, dynamic> data}) async {
+  Future<void> insert({
+    required String table,
+    required Map<String, dynamic> data,
+  }) async {
     try {
       final res = await supa.from(table).insert(data).select();
       if (res.isEmpty) throw Exception('Insert failed');
@@ -41,10 +43,11 @@ class SupabaseServicePro {
       throw Exception('Insert error: $e');
     }
   }
-// EXSAMPLE USE:
-// await db.insert(table: 'expenses', data: {'amount': 45, 'category': 'Food'});
-//
-// ▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼ Update ▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼
+
+  // EXSAMPLE USE:
+  // await db.insert(table: 'expenses', data: {'amount': 45, 'category': 'Food'});
+  //
+  // ▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼ Update ▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼
   Future<void> update({
     required String table,
     required String column,
@@ -52,16 +55,21 @@ class SupabaseServicePro {
     required Map<String, dynamic> newData,
   }) async {
     try {
-      final res = await supa.from(table).update(newData).eq(column, value).select();
+      final res = await supa
+          .from(table)
+          .update(newData)
+          .eq(column, value)
+          .select();
       if (res.isEmpty) throw Exception('Update failed or no record found');
     } catch (e) {
       throw Exception('Update error: $e');
     }
   }
-// EXSAMPLE USE:
-// await db.update(table: 'expenses', column: 'id', value: 'uuid_123', newData: {'amount': 60});
-//
-// ▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼ Delete ▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼
+
+  // EXSAMPLE USE:
+  // await db.update(table: 'expenses', column: 'id', value: 'uuid_123', newData: {'amount': 60});
+  //
+  // ▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼ Delete ▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼
   Future<void> delete({
     required String table,
     required String column,
@@ -73,10 +81,11 @@ class SupabaseServicePro {
       throw Exception('Delete error: $e');
     }
   }
-// EXSAMPLE USE:
-// await db.delete(table: 'expenses', column: 'id', value: 'uuid_123');
-//
-// ▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼ Realtime ▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼
+
+  // EXSAMPLE USE:
+  // await db.delete(table: 'expenses', column: 'id', value: 'uuid_123');
+  //
+  // ▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼ Realtime ▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼
   RealtimeChannel listenToTable({
     required String table,
     required void Function(PostgresChangePayload payload) onChange,
