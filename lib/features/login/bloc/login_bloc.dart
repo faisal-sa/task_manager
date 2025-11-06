@@ -43,7 +43,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
 
         if (response.session != null) {
-          emit(state.copyWith(isLoading: false));
+          emit(state.copyWith(isLoading: false, success: true));
         } else {
           emit(state.copyWith(isLoading: false, errorMessage: 'Invalid '));
         }

@@ -34,6 +34,9 @@ class LoginPage extends StatelessWidget {
                     context,
                   ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
                 }
+                if (state.success == true) {
+                  context.go("/employee_page");
+                }
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,7 +133,7 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   /// -------- Sign Up Button --------
-                  SinUp(context),
+                  Signup(context),
 
                   const SizedBox(height: 30),
                 ],

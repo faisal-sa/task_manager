@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-SizedBox SinUp(BuildContext context) {
+SizedBox Signup(BuildContext context) {
   return SizedBox(
     width: double.infinity,
     height: 48,
