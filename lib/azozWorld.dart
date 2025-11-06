@@ -27,9 +27,10 @@
 
 import 'package:supabase_flutter/supabase_flutter.dart'; // you need to import the packege [supabase]
 
-final supa = Supabase.instance.client;
-
 class SupabaseServicePro {
+  final SupabaseClient _client;
+
+  SupabaseServicePro(this._client);
   // ▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼ Insert ▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼
 
   Future<void> insert({
@@ -37,7 +38,7 @@ class SupabaseServicePro {
     required Map<String, dynamic> data,
   }) async {
     try {
-      final res = await supa.from(table).insert(data).select();
+      final res = await _client.from(table).insert(data).select();
       if (res.isEmpty) throw Exception('Insert failed');
     } catch (e) {
       throw Exception('Insert error: $e');
@@ -55,7 +56,7 @@ class SupabaseServicePro {
     required Map<String, dynamic> newData,
   }) async {
     try {
-      final res = await supa
+      final res = await _client
           .from(table)
           .update(newData)
           .eq(column, value)
@@ -76,7 +77,7 @@ class SupabaseServicePro {
     required dynamic value,
   }) async {
     try {
-      await supa.from(table).delete().eq(column, value);
+      await _client.from(table).delete().eq(column, value);
     } catch (e) {
       throw Exception('Delete error: $e');
     }
@@ -90,7 +91,7 @@ class SupabaseServicePro {
     required String table,
     required void Function(PostgresChangePayload payload) onChange,
   }) {
-    final channel = supa.channel('public:${table}')
+    final channel = _client.channel('public:$table')
       ..onPostgresChanges(
         event: PostgresChangeEvent.all,
         schema: 'public',

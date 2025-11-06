@@ -1,3 +1,4 @@
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/azozWorld.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/initializer/supabase_initializer.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/services/auth_service.dart';
 import 'package:get_it/get_it.dart';
@@ -10,5 +11,8 @@ Future<void> setupLocator() async {
   locator.registerSingleton<SupabaseClient>(supabaseClient);
   locator.registerLazySingleton<AuthService>(
     () => AuthService(locator<SupabaseClient>()),
+  );
+  locator.registerLazySingleton<SupabaseServicePro>(
+    () => SupabaseServicePro(locator<SupabaseClient>()),
   );
 }

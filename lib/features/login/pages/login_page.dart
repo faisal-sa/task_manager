@@ -6,21 +6,17 @@ import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/widgets/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
+  static Widget builder(BuildContext context, GoRouterState state) {
     return BlocProvider(
-      create: (_) => LoginBloc(authService: locator<AuthService>()),
-      child: const _LoginView(),
+      create: (context) => LoginBloc(authService: locator<AuthService>()),
+      child: LoginPage(),
     );
   }
-}
-
-class _LoginView extends StatelessWidget {
-  const _LoginView();
 
   @override
   Widget build(BuildContext context) {
