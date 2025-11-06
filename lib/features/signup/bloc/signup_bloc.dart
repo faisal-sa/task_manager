@@ -5,8 +5,8 @@ import 'package:equatable/equatable.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/services/auth_service.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/utils/validators.dart';
 
-part 'sinup_event.dart';
-part 'sinup_state.dart';
+part 'signup_event.dart';
+part 'signup_state.dart';
 
 class SignupBloc extends Bloc<SignupEvent, SignupState> {
   final AuthService authService;

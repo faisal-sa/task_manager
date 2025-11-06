@@ -1,5 +1,5 @@
 // lib/features/auth/signup/bloc/signup_state.dart
-part of 'sinup_bloc.dart';
+part of 'signup_bloc.dart';
 
 @immutable
 class SignupState extends Equatable {

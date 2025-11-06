@@ -1,5 +1,5 @@
 // lib/features/auth/signup/bloc/signup_event.dart
-part of 'sinup_bloc.dart';
+part of 'signup_bloc.dart';
 
 @immutable
 abstract class SignupEvent extends Equatable {
