@@ -104,6 +104,43 @@ class SignupPage extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 24),
+                  //  Role Dropdown
+                  const Text('Role'),
+                  const SizedBox(height: 8),
+                  BlocBuilder<SignupBloc, SignupState>(
+                    builder: (context, state) {
+                      return DropdownButtonFormField<String>(
+                        value: state.role.isEmpty ? null : state.role,
+                        hint: const Text('Select your role'),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'employee',
+                            child: Text('Employee'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'manager',
+                            child: Text('Manager'),
+                          ),
+                        ],
+                        onChanged: (value) =>
+                            bloc.add(RoleChanged(value ?? '')),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.grey.shade100,
+                          errorText: state.roleError,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 16,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
 
                   //  Sign Up Button
                   BlocBuilder<SignupBloc, SignupState>(
