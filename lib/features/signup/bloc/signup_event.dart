@@ -41,3 +41,8 @@ class NameChanged extends SignupEvent {
   final String name;
   const NameChanged(this.name);
 }
+
+class RoleChanged extends SignupEvent {
+  final String role;
+  const RoleChanged(this.role);
+}
