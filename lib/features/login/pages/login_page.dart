@@ -7,6 +7,7 @@ import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -28,7 +29,26 @@ class LoginPage extends StatelessWidget {
                   ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
                 }
                 if (state.success == true) {
-                  context.go("/manager_page");
+                  print("success");
+                  if (state.role == 'manager') {
+                    print("going to manager");
+                    context.go(
+                      "/manager_page",
+                      extra: {
+                        'fullName': state.fullName,
+                        'avatarUrl': state.avatarUrl,
+                      },
+                    );
+                  } else if (state.role == 'employee') {
+                    print("going to employee");
+                    context.go(
+                      "/employee_page",
+                      extra: {
+                        'fullName': state.fullName,
+                        'avatarUrl': state.avatarUrl,
+                      },
+                    );
+                  }
                 }
               },
               child: Column(

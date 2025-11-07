@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ManagerPage extends StatelessWidget {
-  const ManagerPage({super.key});
+  final String? fullName;
+  final String? avatarUrl;
+  const ManagerPage({super.key, this.fullName, this.avatarUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class ManagerPage extends StatelessWidget {
         loaded: (name, projects) => Scaffold(
           appBar: AppBar(
             leading: Icon(Icons.person),
-            title: Text("Hello $name"),
+            title: Text("Hello $fullName"),
             centerTitle: true,
             actions: [
               IconButton(

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EmployeePage extends StatelessWidget {
-  const EmployeePage({super.key});
+  final String? fullName;
+  final String? avatarUrl;
+  const EmployeePage({super.key, this.fullName, this.avatarUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,7 @@ class EmployeePage extends StatelessWidget {
         child: Center(
           child: BlocBuilder<EmployeeBloc, EmployeeState>(
             builder: (context, state) => state.when(
-              initial: () => Text("Welcome"),
+              initial: () => Text("Welcome $fullName"),
               loading: () => CircularProgressIndicator(),
               loaded: (List string) => Row(
                 children: List.generate(

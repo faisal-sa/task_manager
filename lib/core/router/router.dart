@@ -38,22 +38,28 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/employee_page',
       builder: (context, state) {
+        final extras = state.extra as Map<String, dynamic>?;
+        final fullName = extras?['fullName'] as String?;
+        final avatarUrl = extras?['avatarUrl'] as String?;
         return BlocProvider(
           create: (context) =>
               EmployeeBloc(client: locator<SupabaseClient>())
                 ..add(EmployeeEvent.initialize()),
-          child: const EmployeePage(),
+          child: EmployeePage(fullName: fullName, avatarUrl: avatarUrl),
         );
       },
     ),
     GoRoute(
       path: '/manager_page',
       builder: (context, state) {
+        final extras = state.extra as Map<String, dynamic>?;
+        final fullName = extras?['fullName'] as String?;
+        final avatarUrl = extras?['avatarUrl'] as String?;
         return BlocProvider(
           create: (context) =>
               ManagerBloc(client: locator<SupabaseClient>())
                 ..add(ManagerEvent.initialize()),
-          child: const ManagerPage(),
+          child: ManagerPage(fullName: fullName, avatarUrl: avatarUrl),
         );
       },
     ),

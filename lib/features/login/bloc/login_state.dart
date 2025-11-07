@@ -9,8 +9,14 @@ class LoginState extends Equatable {
   final String? emailError;
   final String? passwordError;
   final bool success;
+  final String? role;
+  final String? fullName;
+  final String? avatarUrl;
 
   const LoginState({
+    this.role,
+    this.fullName,
+    this.avatarUrl,
     this.email = '',
     this.password = '',
     this.isLoading = false,
@@ -35,6 +41,9 @@ class LoginState extends Equatable {
     String? emailError,
     String? passwordError,
     bool? success,
+    String? role,
+    String? fullName,
+    String? avatarUrl,
   }) {
     return LoginState(
       email: email ?? this.email,
@@ -44,6 +53,9 @@ class LoginState extends Equatable {
       emailError: emailError,
       passwordError: passwordError,
       success: success ?? this.success,
+      role: role ?? this.role,
+      fullName: fullName ?? this.fullName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
     );
   }
 
@@ -55,5 +67,9 @@ class LoginState extends Equatable {
     errorMessage,
     emailError,
     passwordError,
+    fullName,
+    avatarUrl,
+    role,
+    success,
   ];
 }

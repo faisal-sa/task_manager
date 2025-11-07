@@ -10,8 +10,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
     on<EmployeeEvent>((event, emit) async {
       await event.when(
         initialize: () async {
-          print("initializing now");
-          emit(EmployeeState.loading());
+          //emit(EmployeeState.loading());
         },
       );
     });
