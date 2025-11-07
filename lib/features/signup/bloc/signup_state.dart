@@ -46,15 +46,21 @@ class SignupState extends Equatable {
       !isLoading;
 
   SignupState copyWith({
+    String? name,
+    String? role,
+
     String? email,
     String? password,
     String? confirmPassword,
     bool? isLoading,
     bool? success,
+    String? nameError,
+
     String? errorMessage,
     String? emailError,
     String? passwordError,
     String? confirmPasswordError,
+    String? roleError,
   }) {
     return SignupState(
       email: email ?? this.email,
