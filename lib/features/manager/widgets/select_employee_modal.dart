@@ -1,18 +1,9 @@
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/di/get_it.dart';
 import 'package:flutter/material.dart';
-
-const List<String> _dummyEmployees = [
-  'Alice Johnson',
-  'Bob Williams',
-  'Charlie Brown',
-  'Diana Miller',
-  'Ethan Davis',
-  'Fiona Garcia',
-  'George Rodriguez',
-  'Hannah Martinez',
-];
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SelectEmployeeModal extends StatefulWidget {
-  final String? initialSelectedEmployee; // Takes a single employee
+  final Map<String, dynamic>? initialSelectedEmployee; // now stores id & name
 
   const SelectEmployeeModal({super.key, required this.initialSelectedEmployee});
 
@@ -21,14 +12,38 @@ class SelectEmployeeModal extends StatefulWidget {
 }
 
 class _SelectEmployeeModalState extends State<SelectEmployeeModal> {
-  // A temporary variable to hold the selection made within this modal
-  late String? _selectedEmployee;
+  Map<String, dynamic>? _selectedEmployee;
+  List<Map<String, dynamic>> employees = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    // Initialize with the employee that was already selected
     _selectedEmployee = widget.initialSelectedEmployee;
+    _fetchEmployees();
+  }
+
+  Future<void> _fetchEmployees() async {
+    setState(() => _isLoading = true);
+    try {
+      final supabase = locator<SupabaseClient>();
+
+      final response = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .eq('role', 'employee');
+
+      setState(() {
+        employees = List<Map<String, dynamic>>.from(response);
+      });
+    } catch (error) {
+      debugPrint('Error fetching employees: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to fetch employees')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -40,36 +55,42 @@ class _SelectEmployeeModalState extends State<SelectEmployeeModal> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Select Employee', // Changed title
+            'Select Employee',
             textAlign: TextAlign.center,
             style: Theme.of(
               context,
             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          // Use Expanded and ListView for a scrollable list
-          Expanded(
-            child: ListView.builder(
-              itemCount: _dummyEmployees.length,
-              itemBuilder: (context, index) {
-                final employee = _dummyEmployees[index];
-                return RadioListTile<String>(
-                  title: Text(employee),
-                  value: employee, // The value this radio button represents
-                  groupValue: _selectedEmployee, // The currently selected value
-                  onChanged: (String? value) {
-                    setState(() {
-                      _selectedEmployee = value; // Update the selected employee
-                    });
-                  },
-                );
-              },
+          if (_isLoading)
+            const Center(child: CircularProgressIndicator())
+          else if (employees.isEmpty)
+            const Center(child: Text('No employees found'))
+          else
+            Expanded(
+              child: ListView.builder(
+                itemCount: employees.length,
+                itemBuilder: (context, index) {
+                  final employee = employees[index];
+                  final employeeName = employee['full_name'] ?? 'Unnamed';
+                  final employeeId = employee['id'];
+
+                  return RadioListTile<String>(
+                    title: Text(employeeName),
+                    value: employeeId,
+                    groupValue: _selectedEmployee?['id'],
+                    onChanged: (_) {
+                      setState(() {
+                        _selectedEmployee = employee;
+                      });
+                    },
+                  );
+                },
+              ),
             ),
-          ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              // Pop the modal and return the final selected employee
               Navigator.of(context).pop(_selectedEmployee);
             },
             child: const Text('Done'),
