@@ -59,16 +59,26 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     });
 
     on<SignupSubmitted>((event, emit) async {
+      final nameError = Validators.validateName(state.name);
+
       final emailError = Validators.validateEmail(state.email);
       final passwordError = Validators.validatePassword(state.password);
       final confirmError = Validators.validateConfirmPassword(
         state.confirmPassword,
         state.password,
       );
+      final roleError = state.role.isEmpty ? 'Please select a role' : null;
 
-      if (emailError != null || passwordError != null || confirmError != null) {
+      if (roleError != null ||
+          nameError != null ||
+          emailError != null ||
+          passwordError != null ||
+          confirmError != null) {
         emit(
           state.copyWith(
+            nameError: nameError,
+            roleError: roleError,
+
             emailError: emailError,
             passwordError: passwordError,
             confirmPasswordError: confirmError,
@@ -80,7 +90,13 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       emit(state.copyWith(isLoading: true, errorMessage: null));
 
       try {
-        await authService.signUp(email: state.email, password: state.password);
+        await authService.signUp(
+          name: state.name,
+          role: state.role,
+
+          email: state.email,
+          password: state.password,
+        );
 
         emit(state.copyWith(isLoading: false, success: true));
       } catch (e) {

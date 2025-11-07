@@ -44,7 +44,19 @@ class SignupPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40),
+                  Text('Full Name'),
+                  SizedBox(height: 8),
+                  BlocBuilder<SignupBloc, SignupState>(
+                    builder: (context, state) {
+                      return CustomTextField(
+                        hintText: 'Enter your full name',
+                        icon: Icons.person,
+                        onChanged: (value) => bloc.add(NameChanged(value)),
+                        errorText: state.nameError,
+                      );
+                    },
+                  ),
 
                   //  Email
                   const Text('Email Address'),
