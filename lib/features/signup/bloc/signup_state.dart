@@ -63,6 +63,11 @@ class SignupState extends Equatable {
     String? roleError,
   }) {
     return SignupState(
+      name: name ?? this.name,
+      role: role ?? this.role,
+      nameError: nameError,
+      roleError: roleError,
+
       email: email ?? this.email,
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
@@ -77,6 +82,11 @@ class SignupState extends Equatable {
 
   @override
   List<Object?> get props => [
+    name,
+    role,
+    nameError,
+    roleError,
+
     email,
     password,
     confirmPassword,
