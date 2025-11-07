@@ -8,6 +8,8 @@ class AuthService {
   Future<AuthResponse> signUp({
     required String email,
     required String password,
+    required String name,
+    required String role,
   }) async {
     return await _client.auth.signUp(email: email, password: password);
   }
