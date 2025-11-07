@@ -55,13 +55,14 @@ extension ManagerStatePatterns on ManagerState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _:
+return loaded(_that);case _Error() when error != null:
+return error(_that);case _:
   return orElse();
 
 }
@@ -79,13 +80,14 @@ return loaded(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Loading():
 return loading(_that);case _Loaded():
-return loaded(_that);case _:
+return loaded(_that);case _Error():
+return error(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -102,13 +104,14 @@ return loaded(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _:
+return loaded(_that);case _Error() when error != null:
+return error(_that);case _:
   return null;
 
 }
@@ -125,12 +128,13 @@ return loaded(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( String name,  List? projects)?  loaded,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Task> tasks,  List<UserProfile> employees)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.name,_that.projects);case _:
+return loaded(_that.tasks,_that.employees);case _Error() when error != null:
+return error(_that.message);case _:
   return orElse();
 
 }
@@ -148,12 +152,13 @@ return loaded(_that.name,_that.projects);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( String name,  List? projects)  loaded,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Task> tasks,  List<UserProfile> employees)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.name,_that.projects);case _:
+return loaded(_that.tasks,_that.employees);case _Error():
+return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -170,12 +175,13 @@ return loaded(_that.name,_that.projects);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( String name,  List? projects)?  loaded,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Task> tasks,  List<UserProfile> employees)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.name,_that.projects);case _:
+return loaded(_that.tasks,_that.employees);case _Error() when error != null:
+return error(_that.message);case _:
   return null;
 
 }
@@ -251,17 +257,21 @@ String toString() {
 
 
 class _Loaded implements ManagerState {
-  const _Loaded({required this.name, final  List? projects}): _projects = projects;
+  const _Loaded({required final  List<Task> tasks, required final  List<UserProfile> employees}): _tasks = tasks,_employees = employees;
   
 
- final  String name;
- final  List? _projects;
- List? get projects {
-  final value = _projects;
-  if (value == null) return null;
-  if (_projects is EqualUnmodifiableListView) return _projects;
+ final  List<Task> _tasks;
+ List<Task> get tasks {
+  if (_tasks is EqualUnmodifiableListView) return _tasks;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(value);
+  return EqualUnmodifiableListView(_tasks);
+}
+
+ final  List<UserProfile> _employees;
+ List<UserProfile> get employees {
+  if (_employees is EqualUnmodifiableListView) return _employees;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_employees);
 }
 
 
@@ -275,16 +285,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._projects, _projects));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._tasks, _tasks)&&const DeepCollectionEquality().equals(other._employees, _employees));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,name,const DeepCollectionEquality().hash(_projects));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tasks),const DeepCollectionEquality().hash(_employees));
 
 @override
 String toString() {
-  return 'ManagerState.loaded(name: $name, projects: $projects)';
+  return 'ManagerState.loaded(tasks: $tasks, employees: $employees)';
 }
 
 
@@ -295,7 +305,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $ManagerStateCopyWith<$Re
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- String name, List? projects
+ List<Task> tasks, List<UserProfile> employees
 });
 
 
@@ -312,11 +322,77 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of ManagerState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? name = null,Object? projects = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? tasks = null,Object? employees = null,}) {
   return _then(_Loaded(
-name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,projects: freezed == projects ? _self._projects : projects // ignore: cast_nullable_to_non_nullable
-as List?,
+tasks: null == tasks ? _self._tasks : tasks // ignore: cast_nullable_to_non_nullable
+as List<Task>,employees: null == employees ? _self._employees : employees // ignore: cast_nullable_to_non_nullable
+as List<UserProfile>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _Error implements ManagerState {
+  const _Error({required this.message});
+  
+
+ final  String message;
+
+/// Create a copy of ManagerState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ErrorCopyWith<_Error> get copyWith => __$ErrorCopyWithImpl<_Error>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'ManagerState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ErrorCopyWith<$Res> implements $ManagerStateCopyWith<$Res> {
+  factory _$ErrorCopyWith(_Error value, $Res Function(_Error) _then) = __$ErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class __$ErrorCopyWithImpl<$Res>
+    implements _$ErrorCopyWith<$Res> {
+  __$ErrorCopyWithImpl(this._self, this._then);
+
+  final _Error _self;
+  final $Res Function(_Error) _then;
+
+/// Create a copy of ManagerState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(_Error(
+message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

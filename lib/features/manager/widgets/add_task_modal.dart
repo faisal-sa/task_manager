@@ -1,4 +1,7 @@
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/bloc/manager_bloc.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/bloc/manager_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -116,6 +119,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
           const SnackBar(content: Text('Task successfully added!')),
         );
         Navigator.of(context).pop();
+        context.read<ManagerBloc>().add(ManagerEvent.fetchAllData());
       }
     } catch (error) {
       if (mounted) {

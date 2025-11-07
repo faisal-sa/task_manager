@@ -39,13 +39,19 @@ final GoRouter router = GoRouter(
       path: '/employee_page',
       builder: (context, state) {
         final extras = state.extra as Map<String, dynamic>?;
+
         final fullName = extras?['fullName'] as String?;
         final avatarUrl = extras?['avatarUrl'] as String?;
+        final employeeId = locator<SupabaseClient>().auth.currentUser!.id;
         return BlocProvider(
           create: (context) =>
               EmployeeBloc(client: locator<SupabaseClient>())
-                ..add(EmployeeEvent.initialize()),
-          child: EmployeePage(fullName: fullName, avatarUrl: avatarUrl),
+                ..add(EmployeeEvent.fetchTasks(employeeId: employeeId)),
+          child: EmployeePage(
+            fullName: fullName,
+            avatarUrl: avatarUrl,
+            employeeId: employeeId,
+          ),
         );
       },
     ),
@@ -58,7 +64,7 @@ final GoRouter router = GoRouter(
         return BlocProvider(
           create: (context) =>
               ManagerBloc(client: locator<SupabaseClient>())
-                ..add(ManagerEvent.initialize()),
+                ..add(ManagerEvent.fetchAllData()),
           child: ManagerPage(fullName: fullName, avatarUrl: avatarUrl),
         );
       },

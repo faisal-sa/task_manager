@@ -55,11 +55,12 @@ extension EmployeeEventPatterns on EmployeeEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initialize value)?  initialize,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initialize value)?  initialize,TResult Function( _FetchTasks value)?  fetchTasks,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initialize() when initialize != null:
-return initialize(_that);case _:
+return initialize(_that);case _FetchTasks() when fetchTasks != null:
+return fetchTasks(_that);case _:
   return orElse();
 
 }
@@ -77,11 +78,12 @@ return initialize(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initialize value)  initialize,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initialize value)  initialize,required TResult Function( _FetchTasks value)  fetchTasks,}){
 final _that = this;
 switch (_that) {
 case _Initialize():
-return initialize(_that);case _:
+return initialize(_that);case _FetchTasks():
+return fetchTasks(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -98,11 +100,12 @@ return initialize(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initialize value)?  initialize,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initialize value)?  initialize,TResult? Function( _FetchTasks value)?  fetchTasks,}){
 final _that = this;
 switch (_that) {
 case _Initialize() when initialize != null:
-return initialize(_that);case _:
+return initialize(_that);case _FetchTasks() when fetchTasks != null:
+return fetchTasks(_that);case _:
   return null;
 
 }
@@ -119,10 +122,11 @@ return initialize(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initialize,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initialize,TResult Function( String employeeId)?  fetchTasks,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initialize() when initialize != null:
-return initialize();case _:
+return initialize();case _FetchTasks() when fetchTasks != null:
+return fetchTasks(_that.employeeId);case _:
   return orElse();
 
 }
@@ -140,10 +144,11 @@ return initialize();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initialize,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initialize,required TResult Function( String employeeId)  fetchTasks,}) {final _that = this;
 switch (_that) {
 case _Initialize():
-return initialize();case _:
+return initialize();case _FetchTasks():
+return fetchTasks(_that.employeeId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -160,10 +165,11 @@ return initialize();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initialize,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initialize,TResult? Function( String employeeId)?  fetchTasks,}) {final _that = this;
 switch (_that) {
 case _Initialize() when initialize != null:
-return initialize();case _:
+return initialize();case _FetchTasks() when fetchTasks != null:
+return fetchTasks(_that.employeeId);case _:
   return null;
 
 }
@@ -202,5 +208,71 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _FetchTasks implements EmployeeEvent {
+  const _FetchTasks({required this.employeeId});
+  
+
+ final  String employeeId;
+
+/// Create a copy of EmployeeEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$FetchTasksCopyWith<_FetchTasks> get copyWith => __$FetchTasksCopyWithImpl<_FetchTasks>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FetchTasks&&(identical(other.employeeId, employeeId) || other.employeeId == employeeId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,employeeId);
+
+@override
+String toString() {
+  return 'EmployeeEvent.fetchTasks(employeeId: $employeeId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$FetchTasksCopyWith<$Res> implements $EmployeeEventCopyWith<$Res> {
+  factory _$FetchTasksCopyWith(_FetchTasks value, $Res Function(_FetchTasks) _then) = __$FetchTasksCopyWithImpl;
+@useResult
+$Res call({
+ String employeeId
+});
+
+
+
+
+}
+/// @nodoc
+class __$FetchTasksCopyWithImpl<$Res>
+    implements _$FetchTasksCopyWith<$Res> {
+  __$FetchTasksCopyWithImpl(this._self, this._then);
+
+  final _FetchTasks _self;
+  final $Res Function(_FetchTasks) _then;
+
+/// Create a copy of EmployeeEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? employeeId = null,}) {
+  return _then(_FetchTasks(
+employeeId: null == employeeId ? _self.employeeId : employeeId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 // dart format on

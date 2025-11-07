@@ -48,7 +48,6 @@ class SignupState extends Equatable {
   SignupState copyWith({
     String? name,
     String? role,
-
     String? email,
     String? password,
     String? confirmPassword,
@@ -67,7 +66,6 @@ class SignupState extends Equatable {
       role: role ?? this.role,
       nameError: nameError,
       roleError: roleError,
-
       email: email ?? this.email,
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
@@ -86,7 +84,6 @@ class SignupState extends Equatable {
     role,
     nameError,
     roleError,
-
     email,
     password,
     confirmPassword,

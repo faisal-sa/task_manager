@@ -55,11 +55,12 @@ extension ManagerEventPatterns on ManagerEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initialize value)?  initialize,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _FetchAllData value)?  fetchAllData,TResult Function( _DeleteTask value)?  deleteTask,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _Initialize() when initialize != null:
-return initialize(_that);case _:
+case _FetchAllData() when fetchAllData != null:
+return fetchAllData(_that);case _DeleteTask() when deleteTask != null:
+return deleteTask(_that);case _:
   return orElse();
 
 }
@@ -77,11 +78,12 @@ return initialize(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initialize value)  initialize,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _FetchAllData value)  fetchAllData,required TResult Function( _DeleteTask value)  deleteTask,}){
 final _that = this;
 switch (_that) {
-case _Initialize():
-return initialize(_that);case _:
+case _FetchAllData():
+return fetchAllData(_that);case _DeleteTask():
+return deleteTask(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -98,11 +100,12 @@ return initialize(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initialize value)?  initialize,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _FetchAllData value)?  fetchAllData,TResult? Function( _DeleteTask value)?  deleteTask,}){
 final _that = this;
 switch (_that) {
-case _Initialize() when initialize != null:
-return initialize(_that);case _:
+case _FetchAllData() when fetchAllData != null:
+return fetchAllData(_that);case _DeleteTask() when deleteTask != null:
+return deleteTask(_that);case _:
   return null;
 
 }
@@ -119,10 +122,11 @@ return initialize(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initialize,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  fetchAllData,TResult Function( String taskId)?  deleteTask,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _Initialize() when initialize != null:
-return initialize();case _:
+case _FetchAllData() when fetchAllData != null:
+return fetchAllData();case _DeleteTask() when deleteTask != null:
+return deleteTask(_that.taskId);case _:
   return orElse();
 
 }
@@ -140,10 +144,11 @@ return initialize();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initialize,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  fetchAllData,required TResult Function( String taskId)  deleteTask,}) {final _that = this;
 switch (_that) {
-case _Initialize():
-return initialize();case _:
+case _FetchAllData():
+return fetchAllData();case _DeleteTask():
+return deleteTask(_that.taskId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -160,10 +165,11 @@ return initialize();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initialize,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  fetchAllData,TResult? Function( String taskId)?  deleteTask,}) {final _that = this;
 switch (_that) {
-case _Initialize() when initialize != null:
-return initialize();case _:
+case _FetchAllData() when fetchAllData != null:
+return fetchAllData();case _DeleteTask() when deleteTask != null:
+return deleteTask(_that.taskId);case _:
   return null;
 
 }
@@ -174,8 +180,8 @@ return initialize();case _:
 /// @nodoc
 
 
-class _Initialize implements ManagerEvent {
-  const _Initialize();
+class _FetchAllData implements ManagerEvent {
+  const _FetchAllData();
   
 
 
@@ -185,7 +191,7 @@ class _Initialize implements ManagerEvent {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Initialize);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FetchAllData);
 }
 
 
@@ -194,7 +200,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'ManagerEvent.initialize()';
+  return 'ManagerEvent.fetchAllData()';
 }
 
 
@@ -202,5 +208,71 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _DeleteTask implements ManagerEvent {
+  const _DeleteTask({required this.taskId});
+  
+
+ final  String taskId;
+
+/// Create a copy of ManagerEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DeleteTaskCopyWith<_DeleteTask> get copyWith => __$DeleteTaskCopyWithImpl<_DeleteTask>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteTask&&(identical(other.taskId, taskId) || other.taskId == taskId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,taskId);
+
+@override
+String toString() {
+  return 'ManagerEvent.deleteTask(taskId: $taskId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DeleteTaskCopyWith<$Res> implements $ManagerEventCopyWith<$Res> {
+  factory _$DeleteTaskCopyWith(_DeleteTask value, $Res Function(_DeleteTask) _then) = __$DeleteTaskCopyWithImpl;
+@useResult
+$Res call({
+ String taskId
+});
+
+
+
+
+}
+/// @nodoc
+class __$DeleteTaskCopyWithImpl<$Res>
+    implements _$DeleteTaskCopyWith<$Res> {
+  __$DeleteTaskCopyWithImpl(this._self, this._then);
+
+  final _DeleteTask _self;
+  final $Res Function(_DeleteTask) _then;
+
+/// Create a copy of ManagerEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? taskId = null,}) {
+  return _then(_DeleteTask(
+taskId: null == taskId ? _self.taskId : taskId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 // dart format on
