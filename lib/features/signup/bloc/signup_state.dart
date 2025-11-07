@@ -34,6 +34,9 @@ class SignupState extends Equatable {
   });
 
   bool get isValid =>
+      nameError == null &&
+      role.isNotEmpty &&
+      name.isNotEmpty &&
       emailError == null &&
       passwordError == null &&
       confirmPasswordError == null &&
