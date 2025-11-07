@@ -12,6 +12,10 @@ class SignupState extends Equatable {
   final String? emailError;
   final String? passwordError;
   final String? confirmPasswordError;
+  final String name;
+  final String role;
+  final String? nameError;
+  final String? roleError;
 
   const SignupState({
     this.email = '',
@@ -23,6 +27,10 @@ class SignupState extends Equatable {
     this.emailError,
     this.passwordError,
     this.confirmPasswordError,
+    this.roleError,
+    this.name = '',
+    this.role = '',
+    this.nameError,
   });
 
   bool get isValid =>
