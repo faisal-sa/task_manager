@@ -11,13 +11,6 @@ import 'package:go_router/go_router.dart';
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-  static Widget builder(BuildContext context, GoRouterState state) {
-    return BlocProvider(
-      create: (context) => LoginBloc(authService: locator<AuthService>()),
-      child: LoginPage(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<LoginBloc>();
@@ -35,7 +28,7 @@ class LoginPage extends StatelessWidget {
                   ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
                 }
                 if (state.success == true) {
-                  context.go("/employee_page");
+                  context.go("/manager_page");
                 }
               },
               child: Column(

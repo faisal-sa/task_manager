@@ -1,16 +1,19 @@
-import 'package:bloc/bloc.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/services/auth_service.dart';
-import 'package:equatable/equatable.dart';
-
-part 'employee_event.dart';
-part 'employee_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'employee_event.dart';
+import 'employee_state.dart';
 
 class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
-  final AuthService authService;
+  final SupabaseClient client;
 
-  EmployeeBloc({required this.authService}) : super(EmployeeInitial()) {
-    on<EmployeeEvent>((event, emit) {
-      // TODO: implement event handler
+  EmployeeBloc({required this.client}) : super(EmployeeState.initial()) {
+    on<EmployeeEvent>((event, emit) async {
+      await event.when(
+        initialize: () async {
+          print("initializing now");
+          emit(EmployeeState.loading());
+        },
+      );
     });
   }
 }

@@ -33,6 +33,33 @@ class SupabaseServicePro {
   SupabaseServicePro(this._client);
   // ▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼ Insert ▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼
 
+  // ▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼ Read + FetchAll || Fliter ▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼
+  Future<List<Map<String, dynamic>>> fetch({
+    required String table,
+    String? column,
+    dynamic value,
+    String orderBy = 'created_at',
+    bool ascending = false,
+  }) async {
+    try {
+      var query = _client
+          .from(table)
+          .select("*")
+          .isFilter(
+            '*',
+            value != null,
+          ); //.not('*', 'null')//order(orderBy, ascending: ascending).select("*");
+      if (column != null && value != null) query = query.eq(column, value);
+      final res = await query;
+      return List<Map<String, dynamic>>.from(res);
+    } catch (e) {
+      throw Exception('Fetch error: $e');
+    }
+  }
+
+  // EXSAMPLE USE:
+  // final data = await db.fetch(table: 'expenses');
+  //
   Future<void> insert({
     required String table,
     required Map<String, dynamic> data,

@@ -1,10 +1,13 @@
-part of 'employee_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-abstract class EmployeeState extends Equatable {
-  const EmployeeState();
+part 'employee_state.freezed.dart';
 
-  @override
-  List<Object> get props => [];
+@freezed
+class EmployeeState with _$EmployeeState {
+  const factory EmployeeState.initial() = _Initial;
+
+  const factory EmployeeState.loading() = _Loading;
+
+  const factory EmployeeState.loaded({required List<String> employees}) =
+      _Loaded;
 }
-
-class EmployeeInitial extends EmployeeState {}

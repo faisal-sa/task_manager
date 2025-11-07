@@ -1,22 +1,11 @@
-// lib/features/auth/signup/ui/signup_page.dart
-
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/di/get_it.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/widgets/custom_text_field.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/signup/bloc/signup_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/services/auth_service.dart';
 
 class SignupPage extends StatelessWidget {
   const SignupPage({super.key});
-
-  static Widget builder(BuildContext context, GoRouterState state) {
-    return BlocProvider(
-      create: (context) => SignupBloc(authService: locator<AuthService>()),
-      child: SignupPage(),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

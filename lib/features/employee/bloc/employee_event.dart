@@ -1,8 +1,8 @@
-part of 'employee_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-abstract class EmployeeEvent extends Equatable {
-  const EmployeeEvent();
+part 'employee_event.freezed.dart';
 
-  @override
-  List<Object> get props => [];
+@freezed
+class EmployeeEvent with _$EmployeeEvent {
+  const factory EmployeeEvent.initialize() = _Initialize;
 }
