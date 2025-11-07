@@ -12,6 +12,10 @@ class SignupState extends Equatable {
   final String? emailError;
   final String? passwordError;
   final String? confirmPasswordError;
+  final String name;
+  final String role;
+  final String? nameError;
+  final String? roleError;
 
   const SignupState({
     this.email = '',
@@ -23,9 +27,16 @@ class SignupState extends Equatable {
     this.emailError,
     this.passwordError,
     this.confirmPasswordError,
+    this.roleError,
+    this.name = '',
+    this.role = '',
+    this.nameError,
   });
 
   bool get isValid =>
+      nameError == null &&
+      role.isNotEmpty &&
+      name.isNotEmpty &&
       emailError == null &&
       passwordError == null &&
       confirmPasswordError == null &&
@@ -35,17 +46,28 @@ class SignupState extends Equatable {
       !isLoading;
 
   SignupState copyWith({
+    String? name,
+    String? role,
+
     String? email,
     String? password,
     String? confirmPassword,
     bool? isLoading,
     bool? success,
+    String? nameError,
+
     String? errorMessage,
     String? emailError,
     String? passwordError,
     String? confirmPasswordError,
+    String? roleError,
   }) {
     return SignupState(
+      name: name ?? this.name,
+      role: role ?? this.role,
+      nameError: nameError,
+      roleError: roleError,
+
       email: email ?? this.email,
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
@@ -60,6 +82,11 @@ class SignupState extends Equatable {
 
   @override
   List<Object?> get props => [
+    name,
+    role,
+    nameError,
+    roleError,
+
     email,
     password,
     confirmPassword,
