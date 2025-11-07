@@ -12,6 +12,14 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
   final AuthService authService;
 
   SignupBloc({required this.authService}) : super(const SignupState()) {
+    on<NameChanged>((event, emit) {
+      emit(
+        state.copyWith(
+          name: event.name,
+          nameError: Validators.validateName(event.name),
+        ),
+      );
+    });
     on<EmailChanged>((event, emit) {
       emit(
         state.copyWith(

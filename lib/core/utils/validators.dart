@@ -9,6 +9,13 @@ class Validators {
     return null;
   }
 
+  static String? validateRole(String? role) {
+    if (role == null || role.isEmpty) {
+      return 'Please select your role';
+    }
+    return null;
+  }
+
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
