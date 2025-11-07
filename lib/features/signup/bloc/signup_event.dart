@@ -36,3 +36,8 @@ class ConfirmPasswordChanged extends SignupEvent {
 class SignupSubmitted extends SignupEvent {
   const SignupSubmitted();
 }
+
+class NameChanged extends SignupEvent {
+  final String name;
+  const NameChanged(this.name);
+}
