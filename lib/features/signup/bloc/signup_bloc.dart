@@ -20,6 +20,14 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         ),
       );
     });
+    on<RoleChanged>((event, emit) {
+      emit(
+        state.copyWith(
+          role: event.role,
+          roleError: Validators.validateRole(event.role),
+        ),
+      );
+    });
     on<EmailChanged>((event, emit) {
       emit(
         state.copyWith(
