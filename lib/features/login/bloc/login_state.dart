@@ -9,8 +9,16 @@ class LoginState extends Equatable {
   final String? emailError;
   final String? passwordError;
   final bool success;
+  final String name;
+  final String role;
+  final String? nameError;
+  final String? roleError;
 
-  const LoginState({
+  const LoginState(
+    this.name,
+    this.role,
+    this.nameError,
+    this.roleError, {
     this.email = '',
     this.password = '',
     this.isLoading = false,
