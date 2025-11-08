@@ -61,6 +61,44 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
             );
           }
         },
+        // Added  employee performance stats
+        fetchPerformanceStats: (id) async {
+          emit(const EmployeeState.loading());
+          try {
+            final response = await client
+                .from('tasks')
+                .select()
+                .eq('assigned_to', id);
+            final tasks = (response as List)
+                .map((taskJson) => Task.fromJson(taskJson))
+                .toList();
+
+            final completed = tasks
+                .where((t) => t.status == TaskStatus.completed)
+                .length;
+            final inProgress = tasks
+                .where((t) => t.status == TaskStatus.in_progress)
+                .length;
+            final total = tasks.length;
+            final completionRate = total > 0
+                ? ((completed / total) * 100).toDouble()
+                : 0.0;
+
+            emit(
+              EmployeeState.performanceStats(
+                completed: completed,
+                inProgress: inProgress,
+                completionRate: completionRate,
+              ),
+            );
+          } catch (e) {
+            emit(
+              EmployeeState.error(
+                message: 'Failed to fetch stats: ${e.toString()}',
+              ),
+            );
+          }
+        },
       );
     });
   }
