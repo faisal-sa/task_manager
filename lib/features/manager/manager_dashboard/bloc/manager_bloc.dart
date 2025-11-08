@@ -58,6 +58,28 @@ class ManagerBloc extends Bloc<ManagerEvent, ManagerState> {
             );
           }
         },
+        filterChanged: (filter) async {
+          state.whenOrNull(
+            loaded: (tasks, employees, currentFilter, searchQuery) => emit(
+              ManagerState.loaded(
+                tasks: tasks,
+                employees: employees,
+                currentFilter: filter,
+              ),
+            ),
+          );
+        },
+        searchQueryChanged: (query) async {
+          state.whenOrNull(
+            loaded: (tasks, employees, currentFilter, searchQuery) => emit(
+              ManagerState.loaded(
+                tasks: tasks,
+                employees: employees,
+                searchQuery: query,
+              ),
+            ),
+          );
+        },
       );
     });
   }

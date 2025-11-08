@@ -128,12 +128,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Task> tasks,  List<UserProfile> employees)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Task> tasks,  List<UserProfile> employees,  TaskFilter currentFilter,  String searchQuery)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.tasks,_that.employees);case _Error() when error != null:
+return loaded(_that.tasks,_that.employees,_that.currentFilter,_that.searchQuery);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -152,12 +152,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Task> tasks,  List<UserProfile> employees)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Task> tasks,  List<UserProfile> employees,  TaskFilter currentFilter,  String searchQuery)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.tasks,_that.employees);case _Error():
+return loaded(_that.tasks,_that.employees,_that.currentFilter,_that.searchQuery);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -175,12 +175,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Task> tasks,  List<UserProfile> employees)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Task> tasks,  List<UserProfile> employees,  TaskFilter currentFilter,  String searchQuery)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.tasks,_that.employees);case _Error() when error != null:
+return loaded(_that.tasks,_that.employees,_that.currentFilter,_that.searchQuery);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -257,7 +257,7 @@ String toString() {
 
 
 class _Loaded implements ManagerState {
-  const _Loaded({required final  List<Task> tasks, required final  List<UserProfile> employees}): _tasks = tasks,_employees = employees;
+  const _Loaded({required final  List<Task> tasks, required final  List<UserProfile> employees, this.currentFilter = TaskFilter.all, this.searchQuery = ''}): _tasks = tasks,_employees = employees;
   
 
  final  List<Task> _tasks;
@@ -274,6 +274,8 @@ class _Loaded implements ManagerState {
   return EqualUnmodifiableListView(_employees);
 }
 
+@JsonKey() final  TaskFilter currentFilter;
+@JsonKey() final  String searchQuery;
 
 /// Create a copy of ManagerState
 /// with the given fields replaced by the non-null parameter values.
@@ -285,16 +287,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._tasks, _tasks)&&const DeepCollectionEquality().equals(other._employees, _employees));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._tasks, _tasks)&&const DeepCollectionEquality().equals(other._employees, _employees)&&(identical(other.currentFilter, currentFilter) || other.currentFilter == currentFilter)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tasks),const DeepCollectionEquality().hash(_employees));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tasks),const DeepCollectionEquality().hash(_employees),currentFilter,searchQuery);
 
 @override
 String toString() {
-  return 'ManagerState.loaded(tasks: $tasks, employees: $employees)';
+  return 'ManagerState.loaded(tasks: $tasks, employees: $employees, currentFilter: $currentFilter, searchQuery: $searchQuery)';
 }
 
 
@@ -305,7 +307,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $ManagerStateCopyWith<$Re
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- List<Task> tasks, List<UserProfile> employees
+ List<Task> tasks, List<UserProfile> employees, TaskFilter currentFilter, String searchQuery
 });
 
 
@@ -322,11 +324,13 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of ManagerState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? tasks = null,Object? employees = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? tasks = null,Object? employees = null,Object? currentFilter = null,Object? searchQuery = null,}) {
   return _then(_Loaded(
 tasks: null == tasks ? _self._tasks : tasks // ignore: cast_nullable_to_non_nullable
 as List<Task>,employees: null == employees ? _self._employees : employees // ignore: cast_nullable_to_non_nullable
-as List<UserProfile>,
+as List<UserProfile>,currentFilter: null == currentFilter ? _self.currentFilter : currentFilter // ignore: cast_nullable_to_non_nullable
+as TaskFilter,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

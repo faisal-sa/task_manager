@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Task {
 
- String get id; String get title; String? get description; TaskStatus get status; TaskPriority get priority;@JsonKey(name: 'due_date') DateTime? get dueDate;@JsonKey(name: 'created_at') DateTime get createdAt;@JsonKey(name: 'assigned_to') String? get assignedTo;
+ String get id; String get title; String? get description; TaskStatus get status; TaskPriority get priority;@JsonKey(name: 'due_date') DateTime? get dueDate;@JsonKey(name: 'created_at') DateTime get createdAt;@JsonKey(name: 'assigned_to') String? get assignedTo;@JsonKey(name: 'completed_at') DateTime? get completedAt;
 /// Create a copy of Task
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $TaskCopyWith<Task> get copyWith => _$TaskCopyWithImpl<Task>(this as Task, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Task&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.status, status) || other.status == status)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.assignedTo, assignedTo) || other.assignedTo == assignedTo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Task&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.status, status) || other.status == status)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.assignedTo, assignedTo) || other.assignedTo == assignedTo)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,status,priority,dueDate,createdAt,assignedTo);
+int get hashCode => Object.hash(runtimeType,id,title,description,status,priority,dueDate,createdAt,assignedTo,completedAt);
 
 @override
 String toString() {
-  return 'Task(id: $id, title: $title, description: $description, status: $status, priority: $priority, dueDate: $dueDate, createdAt: $createdAt, assignedTo: $assignedTo)';
+  return 'Task(id: $id, title: $title, description: $description, status: $status, priority: $priority, dueDate: $dueDate, createdAt: $createdAt, assignedTo: $assignedTo, completedAt: $completedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $TaskCopyWith<$Res>  {
   factory $TaskCopyWith(Task value, $Res Function(Task) _then) = _$TaskCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String? description, TaskStatus status, TaskPriority priority,@JsonKey(name: 'due_date') DateTime? dueDate,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'assigned_to') String? assignedTo
+ String id, String title, String? description, TaskStatus status, TaskPriority priority,@JsonKey(name: 'due_date') DateTime? dueDate,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'assigned_to') String? assignedTo,@JsonKey(name: 'completed_at') DateTime? completedAt
 });
 
 
@@ -65,7 +65,7 @@ class _$TaskCopyWithImpl<$Res>
 
 /// Create a copy of Task
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? status = null,Object? priority = null,Object? dueDate = freezed,Object? createdAt = null,Object? assignedTo = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? status = null,Object? priority = null,Object? dueDate = freezed,Object? createdAt = null,Object? assignedTo = freezed,Object? completedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -75,7 +75,8 @@ as TaskStatus,priority: null == priority ? _self.priority : priority // ignore: 
 as TaskPriority,dueDate: freezed == dueDate ? _self.dueDate : dueDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,assignedTo: freezed == assignedTo ? _self.assignedTo : assignedTo // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,completedAt: freezed == completedAt ? _self.completedAt : completedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? description,  TaskStatus status,  TaskPriority priority, @JsonKey(name: 'due_date')  DateTime? dueDate, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'assigned_to')  String? assignedTo)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? description,  TaskStatus status,  TaskPriority priority, @JsonKey(name: 'due_date')  DateTime? dueDate, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'assigned_to')  String? assignedTo, @JsonKey(name: 'completed_at')  DateTime? completedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Task() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.status,_that.priority,_that.dueDate,_that.createdAt,_that.assignedTo);case _:
+return $default(_that.id,_that.title,_that.description,_that.status,_that.priority,_that.dueDate,_that.createdAt,_that.assignedTo,_that.completedAt);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.id,_that.title,_that.description,_that.status,_that.priori
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? description,  TaskStatus status,  TaskPriority priority, @JsonKey(name: 'due_date')  DateTime? dueDate, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'assigned_to')  String? assignedTo)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? description,  TaskStatus status,  TaskPriority priority, @JsonKey(name: 'due_date')  DateTime? dueDate, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'assigned_to')  String? assignedTo, @JsonKey(name: 'completed_at')  DateTime? completedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Task():
-return $default(_that.id,_that.title,_that.description,_that.status,_that.priority,_that.dueDate,_that.createdAt,_that.assignedTo);case _:
+return $default(_that.id,_that.title,_that.description,_that.status,_that.priority,_that.dueDate,_that.createdAt,_that.assignedTo,_that.completedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.id,_that.title,_that.description,_that.status,_that.priori
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? description,  TaskStatus status,  TaskPriority priority, @JsonKey(name: 'due_date')  DateTime? dueDate, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'assigned_to')  String? assignedTo)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? description,  TaskStatus status,  TaskPriority priority, @JsonKey(name: 'due_date')  DateTime? dueDate, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'assigned_to')  String? assignedTo, @JsonKey(name: 'completed_at')  DateTime? completedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Task() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.status,_that.priority,_that.dueDate,_that.createdAt,_that.assignedTo);case _:
+return $default(_that.id,_that.title,_that.description,_that.status,_that.priority,_that.dueDate,_that.createdAt,_that.assignedTo,_that.completedAt);case _:
   return null;
 
 }
@@ -216,7 +217,7 @@ return $default(_that.id,_that.title,_that.description,_that.status,_that.priori
 @JsonSerializable()
 
 class _Task implements Task {
-  const _Task({required this.id, required this.title, this.description, this.status = TaskStatus.pending, this.priority = TaskPriority.medium, @JsonKey(name: 'due_date') this.dueDate, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'assigned_to') this.assignedTo});
+  const _Task({required this.id, required this.title, this.description, this.status = TaskStatus.pending, this.priority = TaskPriority.medium, @JsonKey(name: 'due_date') this.dueDate, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'assigned_to') this.assignedTo, @JsonKey(name: 'completed_at') this.completedAt});
   factory _Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 
 @override final  String id;
@@ -227,6 +228,7 @@ class _Task implements Task {
 @override@JsonKey(name: 'due_date') final  DateTime? dueDate;
 @override@JsonKey(name: 'created_at') final  DateTime createdAt;
 @override@JsonKey(name: 'assigned_to') final  String? assignedTo;
+@override@JsonKey(name: 'completed_at') final  DateTime? completedAt;
 
 /// Create a copy of Task
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Task&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.status, status) || other.status == status)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.assignedTo, assignedTo) || other.assignedTo == assignedTo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Task&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.status, status) || other.status == status)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.assignedTo, assignedTo) || other.assignedTo == assignedTo)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,status,priority,dueDate,createdAt,assignedTo);
+int get hashCode => Object.hash(runtimeType,id,title,description,status,priority,dueDate,createdAt,assignedTo,completedAt);
 
 @override
 String toString() {
-  return 'Task(id: $id, title: $title, description: $description, status: $status, priority: $priority, dueDate: $dueDate, createdAt: $createdAt, assignedTo: $assignedTo)';
+  return 'Task(id: $id, title: $title, description: $description, status: $status, priority: $priority, dueDate: $dueDate, createdAt: $createdAt, assignedTo: $assignedTo, completedAt: $completedAt)';
 }
 
 
@@ -261,7 +263,7 @@ abstract mixin class _$TaskCopyWith<$Res> implements $TaskCopyWith<$Res> {
   factory _$TaskCopyWith(_Task value, $Res Function(_Task) _then) = __$TaskCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String? description, TaskStatus status, TaskPriority priority,@JsonKey(name: 'due_date') DateTime? dueDate,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'assigned_to') String? assignedTo
+ String id, String title, String? description, TaskStatus status, TaskPriority priority,@JsonKey(name: 'due_date') DateTime? dueDate,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'assigned_to') String? assignedTo,@JsonKey(name: 'completed_at') DateTime? completedAt
 });
 
 
@@ -278,7 +280,7 @@ class __$TaskCopyWithImpl<$Res>
 
 /// Create a copy of Task
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? status = null,Object? priority = null,Object? dueDate = freezed,Object? createdAt = null,Object? assignedTo = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? status = null,Object? priority = null,Object? dueDate = freezed,Object? createdAt = null,Object? assignedTo = freezed,Object? completedAt = freezed,}) {
   return _then(_Task(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -288,7 +290,8 @@ as TaskStatus,priority: null == priority ? _self.priority : priority // ignore: 
 as TaskPriority,dueDate: freezed == dueDate ? _self.dueDate : dueDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,assignedTo: freezed == assignedTo ? _self.assignedTo : assignedTo // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,completedAt: freezed == completedAt ? _self.completedAt : completedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

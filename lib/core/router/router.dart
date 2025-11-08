@@ -5,9 +5,11 @@ import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/pages/employee_page.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/bloc/login_bloc.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/pages/login_page.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/bloc/manager_bloc.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/bloc/manager_event.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/pages/manager_page.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/bloc/manager_bloc.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/bloc/manager_event.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/pages/manager_page.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/statistics/bloc/statistics_bloc.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/statistics/pages/statistics_page.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/signup/bloc/signup_bloc.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/signup/pages/signup_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,6 +68,17 @@ final GoRouter router = GoRouter(
               ManagerBloc(client: locator<SupabaseClient>())
                 ..add(ManagerEvent.fetchAllData()),
           child: ManagerPage(fullName: fullName, avatarUrl: avatarUrl),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/statistics',
+      builder: (context, state) {
+        return BlocProvider(
+          create: (context) =>
+              StatisticsBloc(client: Supabase.instance.client)
+                ..add(const StatisticsEvent.fetchStatistics()),
+          child: StatisticsScreen(),
         );
       },
     ),

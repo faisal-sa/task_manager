@@ -21,6 +21,9 @@ _Task _$TaskFromJson(Map<String, dynamic> json) => _Task(
       : DateTime.parse(json['due_date'] as String),
   createdAt: DateTime.parse(json['created_at'] as String),
   assignedTo: json['assigned_to'] as String?,
+  completedAt: json['completed_at'] == null
+      ? null
+      : DateTime.parse(json['completed_at'] as String),
 );
 
 Map<String, dynamic> _$TaskToJson(_Task instance) => <String, dynamic>{
@@ -32,6 +35,7 @@ Map<String, dynamic> _$TaskToJson(_Task instance) => <String, dynamic>{
   'due_date': instance.dueDate?.toIso8601String(),
   'created_at': instance.createdAt.toIso8601String(),
   'assigned_to': instance.assignedTo,
+  'completed_at': instance.completedAt?.toIso8601String(),
 };
 
 const _$TaskStatusEnumMap = {

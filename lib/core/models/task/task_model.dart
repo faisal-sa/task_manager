@@ -18,6 +18,7 @@ abstract class Task with _$Task {
     @JsonKey(name: 'due_date') DateTime? dueDate,
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'assigned_to') String? assignedTo,
+    @JsonKey(name: 'completed_at') DateTime? completedAt,
   }) = _Task;
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
