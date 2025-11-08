@@ -13,7 +13,7 @@ class EmployeeEvent with _$EmployeeEvent {
     required String employeeId,
     required String priority,
   }) = _FilterTasks;
-
+  //stats
   const factory EmployeeEvent.fetchPerformanceStats({
     required String employeeId,
   }) = _FetchPerformanceStats;
