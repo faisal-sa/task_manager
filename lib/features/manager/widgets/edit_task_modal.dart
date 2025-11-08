@@ -243,7 +243,7 @@ class _EditTaskModalState extends State<EditTaskModal> {
 
               // --- Priority Dropdown ---
               DropdownButtonFormField<String>(
-                value: _selectedPriority,
+                initialValue: _selectedPriority,
                 decoration: const InputDecoration(
                   labelText: 'Priority',
                   border: OutlineInputBorder(),

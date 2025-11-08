@@ -34,11 +34,32 @@ class EmployeePage extends StatelessWidget {
             icon: Icon(Icons.logout),
           ),
           //  performance stats
+          // Changed: Navigate to performance page after fetching stats
+          // Changed: use GoRouter for smooth navigation instead of MaterialPageRoute
           IconButton(
             icon: const Icon(Icons.insights),
-            onPressed: () {
-              context.read<EmployeeBloc>().add(
+            onPressed: () async {
+              final bloc = context.read<EmployeeBloc>();
+              bloc.add(
                 EmployeeEvent.fetchPerformanceStats(employeeId: employeeId),
+              );
+
+              await Future.delayed(const Duration(milliseconds: 600));
+
+              bloc.state.maybeMap(
+                performanceStats: (data) {
+                  if (context.mounted) {
+                    context.go(
+                      '/employee_performance',
+                      extra: {
+                        'completed': data.completed,
+                        'inProgress': data.inProgress,
+                        'completionRate': data.completionRate,
+                      },
+                    );
+                  }
+                },
+                orElse: () {},
               );
             },
           ),
@@ -60,18 +81,8 @@ class EmployeePage extends StatelessWidget {
                   ),
                 ),
               ),
-              performanceStats: (completed, inProgress, completionRate) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Completed Tasks: $completed'),
-                    Text('In Progress: $inProgress'),
-                    Text(
-                      'Completion Rate: ${completionRate.toStringAsFixed(1)}%',
-                    ),
-                  ],
-                ),
-              ),
+              performanceStats: (completed, inProgress, completionRate) =>
+                  const SizedBox.shrink(),
 
               loaded: (tasks) {
                 if (tasks.isEmpty) {
