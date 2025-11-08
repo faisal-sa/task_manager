@@ -5,6 +5,7 @@ import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/bloc/manager_event.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/bloc/manager_state.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/widgets/add_task_modal.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/widgets/edit_task_modal.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/widgets/manager_task_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -127,11 +128,13 @@ class ManagerPage extends StatelessWidget {
                           );
                         },
                         onEdit: () {
-                          // TODO: Implement the Edit Task Modal
-                          // This would be similar to the AddTaskModal but pre-filled with task data
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Edit functionality coming soon!'),
+                          showModalBottomSheet(
+                            backgroundColor: Colors.white,
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (_) => BlocProvider.value(
+                              value: BlocProvider.of<ManagerBloc>(context),
+                              child: EditTaskModal(task: task),
                             ),
                           );
                         },
