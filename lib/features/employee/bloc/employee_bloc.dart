@@ -36,6 +36,31 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
             );
           }
         },
+
+        // Added filtering by priority
+        filterTasks: (id, priority) async {
+          emit(const EmployeeState.loading());
+          try {
+            final response = await client
+                .from('tasks')
+                .select()
+                .eq('assigned_to', id)
+                .eq('priority', priority)
+                .order('created_at', ascending: false);
+
+            final tasks = (response as List)
+                .map((taskJson) => Task.fromJson(taskJson))
+                .toList();
+
+            emit(EmployeeState.loaded(tasks: tasks));
+          } catch (e) {
+            emit(
+              EmployeeState.error(
+                message: 'Failed to filter tasks: ${e.toString()}',
+              ),
+            );
+          }
+        },
       );
     });
   }
