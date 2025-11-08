@@ -60,6 +60,19 @@ class EmployeePage extends StatelessWidget {
                   ),
                 ),
               ),
+              performanceStats: (completed, inProgress, completionRate) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Completed Tasks: $completed'),
+                    Text('In Progress: $inProgress'),
+                    Text(
+                      'Completion Rate: ${completionRate.toStringAsFixed(1)}%',
+                    ),
+                  ],
+                ),
+              ),
+
               loaded: (tasks) {
                 if (tasks.isEmpty) {
                   return Center(
@@ -69,6 +82,7 @@ class EmployeePage extends StatelessWidget {
                     ),
                   );
                 }
+
                 return ListView.builder(
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
