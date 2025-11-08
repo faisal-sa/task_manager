@@ -33,7 +33,8 @@ class _TaskCardState extends State<TaskCard> {
   Future<void> _fetchComments() async {
     final response = await _supabase
         .from('task_comments')
-        .select('id, comment, created_at, user_id, user_profiles(email)')
+        //غيرت من ايميل الى الاسم بس
+        .select('id, comment, created_at, user_id, profiles(full_name)')
         .eq('task_id', widget.task.id)
         .order('created_at', ascending: false);
 
@@ -246,7 +247,8 @@ class _TaskCardState extends State<TaskCard> {
                 itemCount: _comments.length,
                 itemBuilder: (context, index) {
                   final c = _comments[index];
-                  final username = c['user_profiles']?['email'] ?? 'Unknown';
+                  //also her 🙂‍↔️
+                  final username = c['profiles']?['full_name'] ?? 'Unknown';
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(

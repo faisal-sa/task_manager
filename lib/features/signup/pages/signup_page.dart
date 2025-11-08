@@ -110,7 +110,7 @@ class SignupPage extends StatelessWidget {
                   BlocBuilder<SignupBloc, SignupState>(
                     builder: (context, state) {
                       return DropdownButtonFormField<String>(
-                        value: state.role.isEmpty ? null : state.role,
+                        initialValue: state.role.isEmpty ? null : state.role,
                         hint: const Text('Select your role'),
                         items: const [
                           DropdownMenuItem(

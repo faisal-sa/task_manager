@@ -55,14 +55,15 @@ extension EmployeeStatePatterns on EmployeeState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,TResult Function( _Error value)?  error,TResult Function( _PerformanceStats value)?  performanceStats,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Loaded() when loaded != null:
 return loaded(_that);case _Error() when error != null:
-return error(_that);case _:
+return error(_that);case _PerformanceStats() when performanceStats != null:
+return performanceStats(_that);case _:
   return orElse();
 
 }
@@ -80,14 +81,15 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,required TResult Function( _Error value)  error,required TResult Function( _PerformanceStats value)  performanceStats,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Loading():
 return loading(_that);case _Loaded():
 return loaded(_that);case _Error():
-return error(_that);case _:
+return error(_that);case _PerformanceStats():
+return performanceStats(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -104,14 +106,15 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _Error value)?  error,TResult? Function( _PerformanceStats value)?  performanceStats,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Loaded() when loaded != null:
 return loaded(_that);case _Error() when error != null:
-return error(_that);case _:
+return error(_that);case _PerformanceStats() when performanceStats != null:
+return performanceStats(_that);case _:
   return null;
 
 }
@@ -128,13 +131,14 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Task> tasks)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Task> tasks)?  loaded,TResult Function( String message)?  error,TResult Function( int completed,  int inProgress,  double completionRate)?  performanceStats,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
 return loaded(_that.tasks);case _Error() when error != null:
-return error(_that.message);case _:
+return error(_that.message);case _PerformanceStats() when performanceStats != null:
+return performanceStats(_that.completed,_that.inProgress,_that.completionRate);case _:
   return orElse();
 
 }
@@ -152,13 +156,14 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Task> tasks)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Task> tasks)  loaded,required TResult Function( String message)  error,required TResult Function( int completed,  int inProgress,  double completionRate)  performanceStats,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
 return loaded(_that.tasks);case _Error():
-return error(_that.message);case _:
+return error(_that.message);case _PerformanceStats():
+return performanceStats(_that.completed,_that.inProgress,_that.completionRate);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -175,13 +180,14 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Task> tasks)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Task> tasks)?  loaded,TResult? Function( String message)?  error,TResult? Function( int completed,  int inProgress,  double completionRate)?  performanceStats,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
 return loaded(_that.tasks);case _Error() when error != null:
-return error(_that.message);case _:
+return error(_that.message);case _PerformanceStats() when performanceStats != null:
+return performanceStats(_that.completed,_that.inProgress,_that.completionRate);case _:
   return null;
 
 }
@@ -385,6 +391,76 @@ class __$ErrorCopyWithImpl<$Res>
   return _then(_Error(
 message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _PerformanceStats implements EmployeeState {
+  const _PerformanceStats({required this.completed, required this.inProgress, required this.completionRate});
+  
+
+ final  int completed;
+ final  int inProgress;
+ final  double completionRate;
+
+/// Create a copy of EmployeeState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PerformanceStatsCopyWith<_PerformanceStats> get copyWith => __$PerformanceStatsCopyWithImpl<_PerformanceStats>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PerformanceStats&&(identical(other.completed, completed) || other.completed == completed)&&(identical(other.inProgress, inProgress) || other.inProgress == inProgress)&&(identical(other.completionRate, completionRate) || other.completionRate == completionRate));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,completed,inProgress,completionRate);
+
+@override
+String toString() {
+  return 'EmployeeState.performanceStats(completed: $completed, inProgress: $inProgress, completionRate: $completionRate)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PerformanceStatsCopyWith<$Res> implements $EmployeeStateCopyWith<$Res> {
+  factory _$PerformanceStatsCopyWith(_PerformanceStats value, $Res Function(_PerformanceStats) _then) = __$PerformanceStatsCopyWithImpl;
+@useResult
+$Res call({
+ int completed, int inProgress, double completionRate
+});
+
+
+
+
+}
+/// @nodoc
+class __$PerformanceStatsCopyWithImpl<$Res>
+    implements _$PerformanceStatsCopyWith<$Res> {
+  __$PerformanceStatsCopyWithImpl(this._self, this._then);
+
+  final _PerformanceStats _self;
+  final $Res Function(_PerformanceStats) _then;
+
+/// Create a copy of EmployeeState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? completed = null,Object? inProgress = null,Object? completionRate = null,}) {
+  return _then(_PerformanceStats(
+completed: null == completed ? _self.completed : completed // ignore: cast_nullable_to_non_nullable
+as int,inProgress: null == inProgress ? _self.inProgress : inProgress // ignore: cast_nullable_to_non_nullable
+as int,completionRate: null == completionRate ? _self.completionRate : completionRate // ignore: cast_nullable_to_non_nullable
+as double,
   ));
 }
 

@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-// 1. Change to StatefulWidget
 class ManagerPage extends StatefulWidget {
   final String? fullName;
   final String? avatarUrl;
@@ -22,15 +21,12 @@ class ManagerPage extends StatefulWidget {
   State<ManagerPage> createState() => _ManagerPageState();
 }
 
-// 2. Create the State class
 class _ManagerPageState extends State<ManagerPage> {
-  // 3. Create the controller
   late final TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
-    // 4. Initialize the controller (optionally with initial BLoC state)
     final initialState = context.read<ManagerBloc>().state;
     final initialQuery =
         initialState.whenOrNull(loaded: (_, __, ___, sq) => sq) ?? '';
@@ -39,18 +35,14 @@ class _ManagerPageState extends State<ManagerPage> {
 
   @override
   void dispose() {
-    // 5. Dispose the controller
     _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // All your old 'build' method code goes here
-    // Remember to use 'widget.fullName' instead of 'fullName'
     return Scaffold(
       appBar: AppBar(
-        // 6. Use 'widget.fullName'
         title: Text("Welcome ${widget.fullName ?? 'Manager'}"),
         actions: [
           IconButton(
@@ -86,23 +78,19 @@ class _ManagerPageState extends State<ManagerPage> {
       body: SafeArea(
         child: BlocListener<ManagerBloc, ManagerState>(
           listener: (context, state) {
-            // 8. Listen for state changes
             final query =
                 state.whenOrNull(
                   loaded: (_, __, ___, searchQuery) => searchQuery,
                 ) ??
                 '';
 
-            // 9. Sync controller if text is different
             if (_searchController.text != query) {
               _searchController.text = query;
-              // Move cursor to the end
               _searchController.selection = TextSelection.fromPosition(
                 TextPosition(offset: _searchController.text.length),
               );
             }
           },
-          // 10. Optimize listener to only run when search query changes
           listenWhen: (prev, current) {
             final prevQuery = prev.whenOrNull(loaded: (_, __, ___, sq) => sq);
             final currQuery = current.whenOrNull(
@@ -110,16 +98,12 @@ class _ManagerPageState extends State<ManagerPage> {
             );
             return prevQuery != currQuery;
           },
-          // 11. Your Column is the child
           child: Column(
             children: [
-              // 12. REMOVE THE BlocSelector from the TextField
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: TextField(
-                  // 13. Assign the controller
                   controller: _searchController,
-                  // 14. REMOVE the 'key'
                   onChanged: (query) {
                     context.read<ManagerBloc>().add(
                       ManagerEvent.searchQueryChanged(query: query),
@@ -139,8 +123,6 @@ class _ManagerPageState extends State<ManagerPage> {
                 ),
               ),
 
-              // 7. ADD FILTER CHIPS
-              // Use BlocSelector to rebuild only for the filter
               BlocSelector<ManagerBloc, ManagerState, TaskFilter>(
                 selector: (state) =>
                     state.whenOrNull(loaded: (_, __, filter, ___) => filter) ??
@@ -171,7 +153,6 @@ class _ManagerPageState extends State<ManagerPage> {
                 },
               ),
 
-              // 8. WRAP LIST IN EXPANDED
               Expanded(
                 child: BlocConsumer<ManagerBloc, ManagerState>(
                   listener: (context, state) {
@@ -194,7 +175,6 @@ class _ManagerPageState extends State<ManagerPage> {
                       error: (message) =>
                           Center(child: Text('Error: $message')),
                       loaded: (allTasks, employees, currentFilter, searchQuery) {
-                        // 9. GET FILTERED LIST from the getter
                         final tasks = state.filteredTasks;
 
                         if (tasks.isEmpty) {
@@ -209,15 +189,10 @@ class _ManagerPageState extends State<ManagerPage> {
                         }
                         return RefreshIndicator(
                           onRefresh: () async {
-                            // 10. Refresh just calls fetchAllData.
-                            // The BLoC resetting the state will
-                            // automatically clear the search query,
-                            // which rebuilds the TextField (via the ValueKey).
                             context.read<ManagerBloc>().add(
                               const ManagerEvent.fetchAllData(),
                             );
                           },
-                          // 11. Use the filtered 'tasks' list
                           child: ListView.builder(
                             itemCount: tasks.length,
                             itemBuilder: (context, index) {

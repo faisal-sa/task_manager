@@ -1,5 +1,3 @@
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/di/get_it.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/services/auth_service.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/bloc/login_bloc.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/widgets/custom_text_field.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/widgets/login_button.dart';
@@ -7,7 +5,6 @@ import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});

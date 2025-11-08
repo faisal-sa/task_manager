@@ -192,7 +192,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
 
               // --- Priority Dropdown ---
               DropdownButtonFormField<String>(
-                value: _selectedPriority,
+                initialValue: _selectedPriority,
                 decoration: const InputDecoration(
                   labelText: 'Priority',
                   border: OutlineInputBorder(),

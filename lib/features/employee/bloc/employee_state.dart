@@ -9,4 +9,10 @@ class EmployeeState with _$EmployeeState {
   const factory EmployeeState.loading() = _Loading;
   const factory EmployeeState.loaded({required List<Task> tasks}) = _Loaded;
   const factory EmployeeState.error({required String message}) = _Error;
+  //performance statistics
+  const factory EmployeeState.performanceStats({
+    required int completed,
+    required int inProgress,
+    required double completionRate,
+  }) = _PerformanceStats;
 }

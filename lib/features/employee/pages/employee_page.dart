@@ -1,6 +1,7 @@
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/di/get_it.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/services/auth_service.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/bloc/employee_bloc.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/bloc/employee_event.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/bloc/employee_state.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/widgets/task_card.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,36 @@ class EmployeePage extends StatelessWidget {
             },
             icon: Icon(Icons.logout),
           ),
+          //  performance stats
+          // Changed: Navigate to performance page after fetching stats
+          // Changed: use GoRouter for smooth navigation instead of MaterialPageRoute
+          IconButton(
+            icon: const Icon(Icons.insights),
+            onPressed: () async {
+              final bloc = context.read<EmployeeBloc>();
+              bloc.add(
+                EmployeeEvent.fetchPerformanceStats(employeeId: employeeId),
+              );
+
+              await Future.delayed(const Duration(milliseconds: 600));
+
+              bloc.state.maybeMap(
+                performanceStats: (data) {
+                  if (context.mounted) {
+                    context.go(
+                      '/employee_performance',
+                      extra: {
+                        'completed': data.completed,
+                        'inProgress': data.inProgress,
+                        'completionRate': data.completionRate,
+                      },
+                    );
+                  }
+                },
+                orElse: () {},
+              );
+            },
+          ),
         ],
       ),
       body: SafeArea(
@@ -50,6 +81,9 @@ class EmployeePage extends StatelessWidget {
                   ),
                 ),
               ),
+              performanceStats: (completed, inProgress, completionRate) =>
+                  const SizedBox.shrink(),
+
               loaded: (tasks) {
                 if (tasks.isEmpty) {
                   return Center(
@@ -59,6 +93,7 @@ class EmployeePage extends StatelessWidget {
                     ),
                   );
                 }
+
                 return ListView.builder(
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
