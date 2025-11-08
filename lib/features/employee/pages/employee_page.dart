@@ -1,6 +1,7 @@
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/di/get_it.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/services/auth_service.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/bloc/employee_bloc.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/bloc/employee_event.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/bloc/employee_state.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/widgets/task_card.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,15 @@ class EmployeePage extends StatelessWidget {
               context.go("/login");
             },
             icon: Icon(Icons.logout),
+          ),
+          //  performance stats
+          IconButton(
+            icon: const Icon(Icons.insights),
+            onPressed: () {
+              context.read<EmployeeBloc>().add(
+                EmployeeEvent.fetchPerformanceStats(employeeId: employeeId),
+              );
+            },
           ),
         ],
       ),
