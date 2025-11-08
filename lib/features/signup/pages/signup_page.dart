@@ -12,6 +12,7 @@ class SignupPage extends StatelessWidget {
     final bloc = context.read<SignupBloc>();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),

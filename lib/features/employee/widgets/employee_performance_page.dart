@@ -24,7 +24,7 @@ class _EmployeePerformancePageState extends State<EmployeePerformancePage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surfaceVariant.withOpacity(0.25),
+      backgroundColor: Colors.white,
       appBar: AppBar(title: const Text('Performance Overview'), elevation: 0),
       body: Center(
         child: SingleChildScrollView(

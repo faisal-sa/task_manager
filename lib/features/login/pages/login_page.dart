@@ -14,6 +14,7 @@ class LoginPage extends StatelessWidget {
     final bloc = context.read<LoginBloc>();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -94,24 +95,6 @@ class LoginPage extends StatelessWidget {
                         onChanged: (value) => bloc.add(PasswordChanged(value)),
                       );
                     },
-                  ),
-
-                  const SizedBox(height: 10),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: () {
-                        // TODO: Add forgot password navigation
-                      },
-                      child: const Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          color: Colors.black,
-                          decoration: TextDecoration.underline,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
                   ),
 
                   const SizedBox(height: 40),

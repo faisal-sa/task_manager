@@ -61,7 +61,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
               },
             );
 
-            await channel.subscribe();
+            channel.subscribe();
           } catch (e) {
             emit(
               EmployeeState.error(
@@ -71,7 +71,6 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
           }
         },
 
-        // Added filtering by priority
         filterTasks: (id, priority) async {
           emit(const EmployeeState.loading());
           try {
@@ -95,7 +94,6 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
             );
           }
         },
-        // Added  employee performance stats
         fetchPerformanceStats: (id) async {
           emit(const EmployeeState.loading());
           try {

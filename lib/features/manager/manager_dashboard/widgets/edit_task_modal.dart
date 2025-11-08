@@ -12,7 +12,6 @@ import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/di/g
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/widgets/select_employee_modal.dart';
 
 class EditTaskModal extends StatefulWidget {
-  // 1. Accepts the task to be edited
   final Task task;
   const EditTaskModal({super.key, required this.task});
 
@@ -32,39 +31,31 @@ class _EditTaskModalState extends State<EditTaskModal> {
   final List<String> _priorities = ['low', 'medium', 'high', 'urgent'];
   bool _isSubmitting = false;
 
-  // 2. Added state to handle async loading of employee name
-  bool _isLoadingEmployee = false;
-
   @override
   void initState() {
     super.initState();
 
-    // 3. Pre-fill form fields from the Task object
     _titleController.text = widget.task.title;
     _descriptionController.text = widget.task.description ?? '';
-    _selectedPriority = widget.task.priority.name; // Convert enum to string
+    _selectedPriority = widget.task.priority.name;
     _selectedDate = widget.task.dueDate;
 
-    // 4. Fetch employee details since Task model only has the ID
     if (widget.task.assignedTo != null) {
       _fetchAssignedEmployee(widget.task.assignedTo!);
     }
   }
 
-  /// 5. New method to fetch employee details for the chip display
   Future<void> _fetchAssignedEmployee(String employeeId) async {
-    setState(() => _isLoadingEmployee = true);
     try {
       final supabase = locator<SupabaseClient>();
       final response = await supabase
           .from('profiles')
           .select('id, full_name')
           .eq('id', employeeId)
-          .single(); // Use .single() to get one record or throw
+          .single();
 
       setState(() {
-        _assignedEmployee = response; // This is a Map<String, dynamic>
-        _isLoadingEmployee = false;
+        _assignedEmployee = response;
       });
     } catch (error) {
       debugPrint('Error fetching assigned employee: $error');
@@ -72,7 +63,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to load employee details: $error')),
         );
-        setState(() => _isLoadingEmployee = false);
       }
     }
   }
@@ -124,7 +114,7 @@ class _EditTaskModalState extends State<EditTaskModal> {
       final updatedTask = {
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
-        'priority': _selectedPriority, // Send the string
+        'priority': _selectedPriority,
         'due_date': _selectedDate?.toIso8601String(),
         'assigned_to': _assignedEmployee?['id'],
       };
@@ -132,7 +122,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
       final response = await supabase
           .from('tasks')
           .update(updatedTask)
-          // 6. Use the ID from the Task object
           .eq('id', widget.task.id)
           .select();
 
@@ -201,7 +190,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                // 5. UI Text Change
                 'Edit Task',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -210,7 +198,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
               ),
               SizedBox(height: 24.h),
 
-              // --- Task Title ---
               TextFormField(
                 controller: _titleController,
                 maxLength: 50,
@@ -228,7 +215,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
               ),
               SizedBox(height: 16.h),
 
-              // --- Task Description ---
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 3,
@@ -241,7 +227,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
               ),
               SizedBox(height: 20.h),
 
-              // --- Priority Dropdown ---
               DropdownButtonFormField<String>(
                 initialValue: _selectedPriority,
                 decoration: const InputDecoration(
@@ -271,7 +256,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
               ),
               SizedBox(height: 20.h),
 
-              // --- Assign Employee ---
               OutlinedButton.icon(
                 onPressed: _isSubmitting ? null : _openEmployeeSelector,
                 icon: const Icon(Icons.person_add_alt_1_outlined),
@@ -282,7 +266,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
               ),
               SizedBox(height: 8.h),
 
-              // --- Display Assigned Employee ---
               if (_assignedEmployee != null)
                 Chip(
                   avatar: CircleAvatar(
@@ -300,7 +283,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
                 ),
               SizedBox(height: 16.h),
 
-              // --- Deadline Picker ---
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                 decoration: BoxDecoration(
@@ -325,7 +307,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
               ),
               SizedBox(height: 24.h),
 
-              // --- Action Buttons ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -337,7 +318,6 @@ class _EditTaskModalState extends State<EditTaskModal> {
                   ),
                   SizedBox(width: 8.w),
                   ElevatedButton(
-                    // 5. UI Button Change
                     onPressed: _isSubmitting ? null : _submitUpdate,
                     child: _isSubmitting
                         ? const SizedBox(
