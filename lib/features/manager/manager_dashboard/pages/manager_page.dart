@@ -41,18 +41,19 @@ class ManagerPage extends StatelessWidget {
             icon: const Icon(Icons.add_task),
             tooltip: 'Add New Task',
           ),
+
+          IconButton(
+            onPressed: () {
+              context.push("/statistics");
+            },
+            icon: Icon(Icons.show_chart),
+          ),
           IconButton(
             onPressed: () {
               locator<AuthService>().signOut();
               context.go("/login");
             },
             icon: Icon(Icons.logout),
-          ),
-          IconButton(
-            onPressed: () {
-              context.push("/statistics");
-            },
-            icon: Icon(Icons.document_scanner),
           ),
         ],
       ),
@@ -105,7 +106,6 @@ class ManagerPage extends StatelessWidget {
               },
             ),
 
-            // Task List
             Expanded(
               child: BlocConsumer<ManagerBloc, ManagerState>(
                 listener: (context, state) {
@@ -126,7 +126,7 @@ class ManagerPage extends StatelessWidget {
                         const Center(child: CircularProgressIndicator()),
                     error: (message) => Center(child: Text('Error: $message')),
                     loaded: (allTasks, employees, currentFilter, searchQuery) {
-                      final tasks = state.filteredTasks; // Using the extension
+                      final tasks = state.filteredTasks;
 
                       if (tasks.isEmpty) {
                         return Center(

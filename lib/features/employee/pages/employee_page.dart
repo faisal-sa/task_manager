@@ -29,16 +29,6 @@ class EmployeePage extends StatelessWidget {
         title: Text(fullName ?? 'Employee Tasks'),
         actions: [
           IconButton(
-            onPressed: () {
-              locator<AuthService>().signOut();
-              context.go("/login");
-            },
-            icon: Icon(Icons.logout),
-          ),
-          //  performance stats
-          // Changed: Navigate to performance page after fetching stats
-          // Changed: use GoRouter for smooth navigation instead of MaterialPageRoute
-          IconButton(
             icon: const Icon(Icons.insights),
             onPressed: () async {
               final bloc = context.read<EmployeeBloc>();
@@ -64,6 +54,13 @@ class EmployeePage extends StatelessWidget {
                 orElse: () {},
               );
             },
+          ),
+          IconButton(
+            onPressed: () {
+              locator<AuthService>().signOut();
+              context.go("/login");
+            },
+            icon: Icon(Icons.logout),
           ),
         ],
       ),
