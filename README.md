@@ -45,6 +45,13 @@ A modern task management system built with Flutter, BLoC pattern, and Supabase b
   - equatable
   - fl_chart (for statistics visualization)
   - flutter_screenutil (for responsive design)
+  - freezed
+  - flutter_dotenv
+  - json_annotation
+  - freezed_annotation
+  - intl
+  - build_runner
+  - json_serializable
 
 ## Project Structure
 
@@ -82,10 +89,5 @@ lib/
 3. Login redirects to appropriate dashboard based on role
 4. Session management using Supabase
 
-## Contribution
+## demo
 
-Feel free to submit issues and enhancement requests.
-
-## License
-
-[Your License Here]
