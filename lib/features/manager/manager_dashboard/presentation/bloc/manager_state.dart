@@ -24,24 +24,18 @@ extension ManagerStateX on ManagerState {
   List<Task> get filteredTasks {
     return whenOrNull(
           loaded: (tasks, employees, currentFilter, searchQuery) {
-            List<Task> tasksToShow = tasks; // Start with the master list
+            List<Task> tasksToShow = tasks;
 
-            // 1. Apply Status Filter - CORRECTED LOGIC
             if (currentFilter == TaskFilter.inProgress) {
               tasksToShow = tasksToShow
-                  .where(
-                    (task) => task.status == TaskStatus.in_progress,
-                  ) // <-- FIXED!
+                  .where((task) => task.status == TaskStatus.in_progress)
                   .toList();
             } else if (currentFilter == TaskFilter.completed) {
               tasksToShow = tasksToShow
-                  .where(
-                    (task) => task.status == TaskStatus.completed,
-                  ) // <-- FIXED!
+                  .where((task) => task.status == TaskStatus.completed)
                   .toList();
             }
 
-            // 2. Apply Search Filter (This logic is already fine)
             if (searchQuery.isNotEmpty) {
               final query = searchQuery.toLowerCase();
               tasksToShow = tasksToShow.where((task) {

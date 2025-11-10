@@ -1,21 +1,25 @@
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/bloc/manager_bloc.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/bloc/manager_event.dart';
+// You can name this file edit_task_modal.dart
+
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/models/task/task_model.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_bloc.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/di/get_it.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/widgets/select_employee_modal.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/widgets/select_employee_modal.dart';
 
-class AddTaskModal extends StatefulWidget {
-  const AddTaskModal({super.key});
+class EditTaskModal extends StatefulWidget {
+  final Task task;
+  const EditTaskModal({super.key, required this.task});
 
   @override
-  State<AddTaskModal> createState() => _AddTaskModalState();
+  State<EditTaskModal> createState() => _EditTaskModalState();
 }
 
-class _AddTaskModalState extends State<AddTaskModal> {
+class _EditTaskModalState extends State<EditTaskModal> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -28,6 +32,42 @@ class _AddTaskModalState extends State<AddTaskModal> {
   bool _isSubmitting = false;
 
   @override
+  void initState() {
+    super.initState();
+
+    _titleController.text = widget.task.title;
+    _descriptionController.text = widget.task.description ?? '';
+    _selectedPriority = widget.task.priority.name;
+    _selectedDate = widget.task.dueDate;
+
+    if (widget.task.assignedTo != null) {
+      _fetchAssignedEmployee(widget.task.assignedTo!);
+    }
+  }
+
+  Future<void> _fetchAssignedEmployee(String employeeId) async {
+    try {
+      final supabase = locator<SupabaseClient>();
+      final response = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .eq('id', employeeId)
+          .single();
+
+      setState(() {
+        _assignedEmployee = response;
+      });
+    } catch (error) {
+      debugPrint('Error fetching assigned employee: $error');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load employee details: $error')),
+        );
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
@@ -38,14 +78,16 @@ class _AddTaskModalState extends State<AddTaskModal> {
     final now = DateTime.now();
     final pickedDate = await showDatePicker(
       context: context,
-      initialDate: now,
+      initialDate: _selectedDate ?? now,
       firstDate: DateTime(now.year, now.month, now.day),
       lastDate: DateTime(now.year + 5),
     );
 
-    setState(() {
-      _selectedDate = pickedDate;
-    });
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
   }
 
   void _openEmployeeSelector() async {
@@ -65,35 +107,32 @@ class _AddTaskModalState extends State<AddTaskModal> {
     }
   }
 
-  Future<void> _createTaskInSupabase() async {
+  Future<void> _updateTaskInSupabase() async {
     try {
       final supabase = locator<SupabaseClient>();
-      final userId = supabase.auth.currentUser?.id;
 
-      if (userId == null) {
-        throw Exception('User not authenticated.');
-      }
-
-      final newTask = {
+      final updatedTask = {
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
         'priority': _selectedPriority,
         'due_date': _selectedDate?.toIso8601String(),
-        'created_by': userId,
         'assigned_to': _assignedEmployee?['id'],
       };
 
-      final response = await supabase.from('tasks').insert(newTask).select();
+      final response = await supabase
+          .from('tasks')
+          .update(updatedTask)
+          .eq('id', widget.task.id)
+          .select();
 
-      debugPrint('✅ Task successfully created: $response');
+      debugPrint('✅ Task successfully updated: $response');
     } catch (e) {
-      debugPrint('❌ Error creating task: $e');
+      debugPrint('❌ Error updating task: $e');
       rethrow;
     }
   }
 
-  /// --- Handles form submission ---
-  void _submitTask() async {
+  void _submitUpdate() async {
     final isValid = _formKey.currentState!.validate();
 
     if (!isValid || _selectedDate == null || _assignedEmployee == null) {
@@ -111,11 +150,11 @@ class _AddTaskModalState extends State<AddTaskModal> {
     setState(() => _isSubmitting = true);
 
     try {
-      await _createTaskInSupabase();
+      await _updateTaskInSupabase();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Task successfully added!')),
+          const SnackBar(content: Text('Task successfully updated!')),
         );
         Navigator.of(context).pop();
         context.read<ManagerBloc>().add(ManagerEvent.fetchAllData());
@@ -124,7 +163,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to add task: $error'),
+            content: Text('Failed to update task: $error'),
             backgroundColor: Colors.red,
           ),
         );
@@ -151,7 +190,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Add New Task',
+                'Edit Task',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -159,7 +198,6 @@ class _AddTaskModalState extends State<AddTaskModal> {
               ),
               SizedBox(height: 24.h),
 
-              // --- Task Title ---
               TextFormField(
                 controller: _titleController,
                 maxLength: 50,
@@ -177,7 +215,6 @@ class _AddTaskModalState extends State<AddTaskModal> {
               ),
               SizedBox(height: 16.h),
 
-              // --- Task Description ---
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 3,
@@ -190,7 +227,6 @@ class _AddTaskModalState extends State<AddTaskModal> {
               ),
               SizedBox(height: 20.h),
 
-              // --- Priority Dropdown ---
               DropdownButtonFormField<String>(
                 initialValue: _selectedPriority,
                 decoration: const InputDecoration(
@@ -220,7 +256,6 @@ class _AddTaskModalState extends State<AddTaskModal> {
               ),
               SizedBox(height: 20.h),
 
-              // --- Assign Employee ---
               OutlinedButton.icon(
                 onPressed: _isSubmitting ? null : _openEmployeeSelector,
                 icon: const Icon(Icons.person_add_alt_1_outlined),
@@ -231,7 +266,6 @@ class _AddTaskModalState extends State<AddTaskModal> {
               ),
               SizedBox(height: 8.h),
 
-              // --- Display Assigned Employee ---
               if (_assignedEmployee != null)
                 Chip(
                   avatar: CircleAvatar(
@@ -273,7 +307,6 @@ class _AddTaskModalState extends State<AddTaskModal> {
               ),
               SizedBox(height: 24.h),
 
-              // --- Action Buttons ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -285,14 +318,14 @@ class _AddTaskModalState extends State<AddTaskModal> {
                   ),
                   SizedBox(width: 8.w),
                   ElevatedButton(
-                    onPressed: _isSubmitting ? null : _submitTask,
+                    onPressed: _isSubmitting ? null : _submitUpdate,
                     child: _isSubmitting
                         ? const SizedBox(
                             height: 18,
                             width: 18,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text('Add Task'),
+                        : const Text('Save Changes'),
                   ),
                 ],
               ),

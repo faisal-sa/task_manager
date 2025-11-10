@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SelectEmployeeModal extends StatefulWidget {
-  final Map<String, dynamic>? initialSelectedEmployee; // now stores id & name
+  final Map<String, dynamic>? initialSelectedEmployee;
 
   const SelectEmployeeModal({super.key, required this.initialSelectedEmployee});
 

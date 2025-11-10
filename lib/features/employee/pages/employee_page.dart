@@ -25,15 +25,6 @@ class EmployeePage extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(fullName ?? 'Employee Tasks'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.insights),
-=======
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
@@ -57,17 +48,8 @@ class EmployeePage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            tooltip: 'Logout',
-            onPressed: () {
-              locator<AuthService>().signOut();
-              context.go("/login");
-            },
-            icon: const Icon(Icons.logout, color: Colors.white),
-          ),
-          IconButton(
             tooltip: 'Performance Stats',
             icon: const Icon(Icons.insights, color: Colors.white),
->>>>>>> origin/newTasks
             onPressed: () async {
               final bloc = context.read<EmployeeBloc>();
               bloc.add(
@@ -142,7 +124,8 @@ class EmployeePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  performanceStats: (_, __, ___) => const SizedBox.shrink(),
+                  performanceStats: (_, __, ___) =>
+                      const Center(child: CircularProgressIndicator.adaptive()),
                   loaded: (tasks) {
                     if (tasks.isEmpty) {
                       return Center(

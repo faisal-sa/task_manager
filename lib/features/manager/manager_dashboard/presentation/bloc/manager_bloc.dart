@@ -11,40 +11,7 @@ class ManagerBloc extends Bloc<ManagerEvent, ManagerState> {
   ManagerBloc({required this.client}) : super(ManagerState.initial()) {
     on<ManagerEvent>((event, emit) async {
       await event.when(
-        fetchAllData: () async {
-          emit(const ManagerState.loading());
-          try {
-            final responses = await Future.wait([
-              client
-                  .from('tasks')
-                  .select()
-                  .order('created_at', ascending: false),
-
-              client
-                  .from('profiles')
-                  .select('id, full_name')
-                  .eq('role', 'employee'),
-            ]);
-
-            final taskResponse = responses[0] as List;
-            final tasks = taskResponse
-                .map((json) => Task.fromJson(json))
-                .toList();
-
-            final employeeResponse = responses[1] as List;
-            final employees = employeeResponse
-                .map((json) => UserProfile.fromJson(json))
-                .toList();
-
-            emit(ManagerState.loaded(tasks: tasks, employees: employees));
-          } catch (e) {
-            emit(
-              ManagerState.error(
-                message: 'Failed to load data: ${e.toString()}',
-              ),
-            );
-          }
-        },
+        fetchAllData: () async => _fetchAllData(emit, client),
         deleteTask: (taskId) async {
           try {
             await client.from('tasks').delete().eq('id', taskId);
@@ -84,3 +51,38 @@ class ManagerBloc extends Bloc<ManagerEvent, ManagerState> {
     });
   }
 }
+
+void _fetchAllData(Emitter<ManagerState> emit, SupabaseClient client) async {
+  emit(const ManagerState.loading());
+  try {
+    final responses = await Future.wait([
+      client.from('tasks').select().order('created_at', ascending: false),
+
+      client.from('profiles').select('id, full_name').eq('role', 'employee'),
+    ]);
+    final taskResponse = responses[0] as List;
+    final tasks = taskResponse.map((json) => Task.fromJson(json)).toList();
+
+    final employeeResponse = responses[1] as List;
+    final employees = employeeResponse
+        .map((json) => UserProfile.fromJson(json))
+        .toList();
+
+    emit(ManagerState.loaded(tasks: tasks, employees: employees));
+  } catch (e) {
+    emit(ManagerState.error(message: 'Failed to load data: ${e.toString()}'));
+  }
+}
+
+
+//   Future<void> _deleteTask(String taskId, Emitter<ManagerState> emit) async {
+//     try {
+//       await client.from('tasks').delete().eq('id', taskId);
+//       add(const ManagerEvent.fetchAllData());
+//     } catch (e) {
+//       emit(ManagerState.error(
+//         message: 'Failed to delete task: ${e.toString()}',
+//       ));
+//     }
+//   }
+// }

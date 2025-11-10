@@ -154,7 +154,6 @@ class StatisticsScreen extends StatelessWidget {
     ];
     int colorIndex = 0;
 
-    // Ensure we don't show chart for empty data
     if (data.isEmpty) return const SizedBox.shrink();
 
     return Card(

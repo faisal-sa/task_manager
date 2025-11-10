@@ -3,12 +3,11 @@ import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/serv
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/bloc/employee_bloc.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/bloc/employee_event.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/pages/employee_page.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/widgets/employee_performance_page.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/bloc/login_bloc.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/pages/login_page.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/bloc/manager_bloc.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/bloc/manager_event.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/pages/manager_page.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_bloc.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_event.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/pages/manager_page.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/statistics/bloc/statistics_bloc.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/statistics/pages/statistics_page.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/signup/bloc/signup_bloc.dart';
@@ -84,21 +83,21 @@ final GoRouter router = GoRouter(
       },
     ),
 
-    GoRoute(
-      path: '/employee_performance',
-      builder: (context, state) {
-        final extras = state.extra as Map<String, dynamic>?;
+    // GoRoute(
+    //   path: '/employee_performance',
+    //   builder: (context, state) {
+    //     final extras = state.extra as Map<String, dynamic>?;
 
-        final completed = extras?['completed'] as int? ?? 0;
-        final inProgress = extras?['inProgress'] as int? ?? 0;
-        final completionRate = extras?['completionRate'] as double? ?? 0.0;
+    //     final completed = extras?['completed'] as int? ?? 0;
+    //     final inProgress = extras?['inProgress'] as int? ?? 0;
+    //     final completionRate = extras?['completionRate'] as double? ?? 0.0;
 
-        return EmployeePerformancePage(
-          completed: completed,
-          inProgress: inProgress,
-          completionRate: completionRate,
-        );
-      },
-    ),
+    //     // return EmployeePerformancePage(
+    //     //   completed: completed,
+    //     //   inProgress: inProgress,
+    //     //   completionRate: completionRate,
+    //     // );
+    //   },
+    // ),
   ],
 );
