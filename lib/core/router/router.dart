@@ -5,9 +5,9 @@ import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/employee/pages/employee_page.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/bloc/login_bloc.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/login/pages/login_page.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_bloc.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_event.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/pages/manager_page.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/task_management/presentation/bloc/manager_bloc.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/task_management/presentation/bloc/manager_event.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/task_management/presentation/pages/manager_page.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/statistics/bloc/statistics_bloc.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/statistics/pages/statistics_page.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/signup/bloc/signup_bloc.dart';
