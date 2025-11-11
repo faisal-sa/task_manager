@@ -1,64 +1,88 @@
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/models/profile/user_profile_model.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/models/task/task_model.dart';
+import 'package:equatable/equatable.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/utils/task_filter.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/domain/entities/manager_task_entity.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/domain/entities/user_entity.dart';
 
-part 'manager_state.freezed.dart';
-
-@freezed
-class ManagerState with _$ManagerState {
-  const factory ManagerState.initial() = _Initial;
-  const factory ManagerState.loading() = _Loading;
-
-  const factory ManagerState.loaded({
-    required List<Task> tasks,
-    required List<UserProfile> employees,
-    @Default(TaskFilter.all) TaskFilter currentFilter,
-    @Default('') String searchQuery,
-  }) = _Loaded;
-
-  const factory ManagerState.error({required String message}) = _Error;
+abstract class ManagerState extends Equatable {
+  const ManagerState();
+  @override
+  List<Object> get props => [];
 }
 
-extension ManagerStateX on ManagerState {
-  List<Task> get filteredTasks {
-    return whenOrNull(
-          loaded: (tasks, employees, currentFilter, searchQuery) {
-            List<Task> tasksToShow = tasks;
+class ManagerInitial extends ManagerState {}
 
-            if (currentFilter == TaskFilter.inProgress) {
-              tasksToShow = tasksToShow
-                  .where((task) => task.status == TaskStatus.in_progress)
-                  .toList();
-            } else if (currentFilter == TaskFilter.completed) {
-              tasksToShow = tasksToShow
-                  .where((task) => task.status == TaskStatus.completed)
-                  .toList();
-            }
+class ManagerLoading extends ManagerState {}
 
-            if (searchQuery.isNotEmpty) {
-              final query = searchQuery.toLowerCase();
-              tasksToShow = tasksToShow.where((task) {
-                final titleMatch = task.title.toLowerCase().contains(query);
+class ManagerError extends ManagerState {
+  final String message;
+  const ManagerError(this.message);
+  @override
+  List<Object> get props => [message];
+}
 
-                final assigneeName = employees
-                    .firstWhere(
-                      (emp) => emp.id == task.assignedTo,
-                      orElse: () =>
-                          const UserProfile(id: '', fullName: 'Unassigned'),
-                    )
-                    .fullName;
-                final assigneeMatch = assigneeName.toLowerCase().contains(
-                  query,
-                );
+class ManagerLoaded extends ManagerState {
+  final List<ManagerTaskEntity> allTasks;
+  final List<UserEntity> employees;
+  final TaskFilter currentFilter;
+  final String searchQuery;
 
-                return titleMatch || assigneeMatch;
-              }).toList();
-            }
+  const ManagerLoaded({
+    this.allTasks = const [],
+    this.employees = const [],
+    this.currentFilter = TaskFilter.all,
+    this.searchQuery = '',
+  });
 
-            return tasksToShow;
-          },
-        ) ??
-        [];
+  List<ManagerTaskEntity> get filteredTasks {
+    List<ManagerTaskEntity> tasks = allTasks;
+
+    if (currentFilter != TaskFilter.all) {
+      tasks = tasks.where((task) {
+        switch (currentFilter) {
+          case TaskFilter.pending:
+            return task.status == TaskStatus.pending;
+          case TaskFilter.inProgress:
+            return task.status == TaskStatus.in_progress;
+          case TaskFilter.completed:
+            return task.status == TaskStatus.completed;
+          default:
+            return true;
+        }
+      }).toList();
+    }
+
+    if (searchQuery.isNotEmpty) {
+      final lowercasedQuery = searchQuery.toLowerCase();
+      tasks = tasks.where((task) {
+        final assigneeName = employees
+            .firstWhere(
+              (emp) => emp.id == task.assignedTo,
+              orElse: () => const UserEntity(id: '', fullName: ''),
+            )
+            .fullName
+            .toLowerCase();
+        return task.title.toLowerCase().contains(lowercasedQuery) ||
+            assigneeName.contains(lowercasedQuery);
+      }).toList();
+    }
+
+    return tasks;
   }
+
+  ManagerLoaded copyWith({
+    List<ManagerTaskEntity>? allTasks,
+    List<UserEntity>? employees,
+    TaskFilter? currentFilter,
+    String? searchQuery,
+  }) {
+    return ManagerLoaded(
+      allTasks: allTasks ?? this.allTasks,
+      employees: employees ?? this.employees,
+      currentFilter: currentFilter ?? this.currentFilter,
+      searchQuery: searchQuery ?? this.searchQuery,
+    );
+  }
+
+  @override
+  List<Object> get props => [allTasks, employees, currentFilter, searchQuery];
 }

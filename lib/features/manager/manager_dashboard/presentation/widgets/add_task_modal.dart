@@ -1,15 +1,17 @@
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_bloc.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/di/get_it.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/widgets/select_employee_modal.dart';
+
+import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/create_task_usecase.dart';
+import '../bloc/manager_bloc.dart';
+import '../bloc/manager_event.dart';
+import 'select_employee_modal.dart';
 
 class AddTaskModal extends StatefulWidget {
-  const AddTaskModal({super.key});
+  final List<UserEntity> employees;
+  const AddTaskModal({super.key, required this.employees});
 
   @override
   State<AddTaskModal> createState() => _AddTaskModalState();
@@ -22,10 +24,10 @@ class _AddTaskModalState extends State<AddTaskModal> {
 
   String? _selectedPriority;
   DateTime? _selectedDate;
-  Map<String, dynamic>? _assignedEmployee;
+  UserEntity? _assignedEmployee;
+  bool _isSubmitting = false;
 
   final List<String> _priorities = ['low', 'medium', 'high', 'urgent'];
-  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -43,18 +45,23 @@ class _AddTaskModalState extends State<AddTaskModal> {
       lastDate: DateTime(now.year + 5),
     );
 
-    setState(() {
-      _selectedDate = pickedDate;
-    });
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
   }
 
   void _openEmployeeSelector() async {
-    final Map<String, dynamic>? selectedEmployee = await showModalBottomSheet(
+    final UserEntity? selectedEmployee = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (ctx) => FractionallySizedBox(
         heightFactor: 0.7,
-        child: SelectEmployeeModal(initialSelectedEmployee: _assignedEmployee),
+        child: SelectEmployeeModal(
+          employees: widget.employees,
+          initialSelectedEmployee: _assignedEmployee,
+        ),
       ),
     );
 
@@ -65,44 +72,20 @@ class _AddTaskModalState extends State<AddTaskModal> {
     }
   }
 
-  Future<void> _createTaskInSupabase() async {
-    try {
-      final supabase = locator<SupabaseClient>();
-      final userId = supabase.auth.currentUser?.id;
-
-      if (userId == null) {
-        throw Exception('User not authenticated.');
-      }
-
-      final newTask = {
-        'title': _titleController.text.trim(),
-        'description': _descriptionController.text.trim(),
-        'priority': _selectedPriority,
-        'due_date': _selectedDate?.toIso8601String(),
-        'created_by': userId,
-        'assigned_to': _assignedEmployee?['id'],
-      };
-
-      final response = await supabase.from('tasks').insert(newTask).select();
-
-      debugPrint('✅ Task successfully created: $response');
-    } catch (e) {
-      debugPrint('❌ Error creating task: $e');
-      rethrow;
+  void _submitTask() {
+    if (!_formKey.currentState!.validate()) {
+      return;
     }
-  }
 
-  /// --- Handles form submission ---
-  void _submitTask() async {
-    final isValid = _formKey.currentState!.validate();
-
-    if (!isValid || _selectedDate == null || _assignedEmployee == null) {
+    if (_selectedPriority == null ||
+        _selectedDate == null ||
+        _assignedEmployee == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Please fill all fields, select a priority, assign an employee, and select a deadline.',
+            'Please select a priority, an employee, and a deadline.',
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.orange,
         ),
       );
       return;
@@ -110,28 +93,16 @@ class _AddTaskModalState extends State<AddTaskModal> {
 
     setState(() => _isSubmitting = true);
 
-    try {
-      await _createTaskInSupabase();
+    final params = CreateTaskParams(
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+      priority: _selectedPriority!,
+      assignedTo: _assignedEmployee!.id,
+      dueDate: _selectedDate,
+    );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Task successfully added!')),
-        );
-        Navigator.of(context).pop();
-        context.read<ManagerBloc>().add(ManagerEvent.fetchAllData());
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to add task: $error'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isSubmitting = false);
-    }
+    context.read<ManagerBloc>().add(CreateTask(params));
+    Navigator.of(context).pop();
   }
 
   @override
@@ -159,25 +130,22 @@ class _AddTaskModalState extends State<AddTaskModal> {
               ),
               SizedBox(height: 24.h),
 
-              // --- Task Title ---
               TextFormField(
                 controller: _titleController,
                 maxLength: 50,
                 decoration: const InputDecoration(
-                  labelText: 'Task Title',
+                  labelText: 'Task Title*',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.title),
                 ),
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
+                  if (value == null || value.trim().isEmpty)
                     return 'Please enter a task title.';
-                  }
                   return null;
                 },
               ),
               SizedBox(height: 16.h),
 
-              // --- Task Description ---
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 3,
@@ -190,11 +158,9 @@ class _AddTaskModalState extends State<AddTaskModal> {
               ),
               SizedBox(height: 20.h),
 
-              // --- Priority Dropdown ---
               DropdownButtonFormField<String>(
-                initialValue: _selectedPriority,
                 decoration: const InputDecoration(
-                  labelText: 'Priority',
+                  labelText: 'Priority*',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.flag_outlined),
                 ),
@@ -206,43 +172,30 @@ class _AddTaskModalState extends State<AddTaskModal> {
                     ),
                   );
                 }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedPriority = value;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a priority.';
-                  }
-                  return null;
-                },
+                onChanged: (value) => setState(() => _selectedPriority = value),
+                validator: (value) =>
+                    value == null ? 'Please select a priority.' : null,
               ),
               SizedBox(height: 20.h),
 
-              // --- Assign Employee ---
               OutlinedButton.icon(
                 onPressed: _isSubmitting ? null : _openEmployeeSelector,
                 icon: const Icon(Icons.person_add_alt_1_outlined),
-                label: const Text('Assign Employee'),
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                label: Text(
+                  _assignedEmployee == null
+                      ? 'Assign Employee*'
+                      : 'Change Assignee',
                 ),
               ),
               SizedBox(height: 8.h),
-
-              // --- Display Assigned Employee ---
               if (_assignedEmployee != null)
                 Chip(
                   avatar: CircleAvatar(
                     child: Text(
-                      _assignedEmployee!['full_name']
-                          .toString()
-                          .substring(0, 1)
-                          .toUpperCase(),
+                      _assignedEmployee!.fullName.substring(0, 1).toUpperCase(),
                     ),
                   ),
-                  label: Text(_assignedEmployee!['full_name']),
+                  label: Text(_assignedEmployee!.fullName),
                   onDeleted: _isSubmitting
                       ? null
                       : () => setState(() => _assignedEmployee = null),
@@ -250,7 +203,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
               SizedBox(height: 16.h),
 
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8.r),
@@ -260,7 +213,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
                   children: [
                     Text(
                       _selectedDate == null
-                          ? 'No Deadline Selected'
+                          ? 'Select Deadline*'
                           : 'Deadline: ${DateFormat.yMd().format(_selectedDate!)}',
                     ),
                     IconButton(
@@ -273,7 +226,6 @@ class _AddTaskModalState extends State<AddTaskModal> {
               ),
               SizedBox(height: 24.h),
 
-              // --- Action Buttons ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -290,7 +242,10 @@ class _AddTaskModalState extends State<AddTaskModal> {
                         ? const SizedBox(
                             height: 18,
                             width: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text('Add Task'),
                   ),

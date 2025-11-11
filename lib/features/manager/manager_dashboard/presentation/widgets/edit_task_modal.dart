@@ -1,19 +1,19 @@
-// You can name this file edit_task_modal.dart
-
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/models/task/task_model.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_bloc.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/di/get_it.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/widgets/select_employee_modal.dart';
+
+import '../../domain/entities/manager_task_entity.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/update_task_usecase.dart';
+import '../bloc/manager_bloc.dart';
+import '../bloc/manager_event.dart';
+import 'select_employee_modal.dart';
 
 class EditTaskModal extends StatefulWidget {
-  final Task task;
-  const EditTaskModal({super.key, required this.task});
+  final ManagerTaskEntity task;
+  final List<UserEntity> employees;
+  const EditTaskModal({super.key, required this.task, required this.employees});
 
   @override
   State<EditTaskModal> createState() => _EditTaskModalState();
@@ -21,48 +21,34 @@ class EditTaskModal extends StatefulWidget {
 
 class _EditTaskModalState extends State<EditTaskModal> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
 
   String? _selectedPriority;
   DateTime? _selectedDate;
-  Map<String, dynamic>? _assignedEmployee;
+  UserEntity? _assignedEmployee;
+  bool _isSubmitting = false;
 
   final List<String> _priorities = ['low', 'medium', 'high', 'urgent'];
-  bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
-
-    _titleController.text = widget.task.title;
-    _descriptionController.text = widget.task.description ?? '';
+    _titleController = TextEditingController(text: widget.task.title);
+    _descriptionController = TextEditingController(
+      text: widget.task.description ?? '',
+    );
     _selectedPriority = widget.task.priority.name;
     _selectedDate = widget.task.dueDate;
 
     if (widget.task.assignedTo != null) {
-      _fetchAssignedEmployee(widget.task.assignedTo!);
-    }
-  }
-
-  Future<void> _fetchAssignedEmployee(String employeeId) async {
-    try {
-      final supabase = locator<SupabaseClient>();
-      final response = await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .eq('id', employeeId)
-          .single();
-
-      setState(() {
-        _assignedEmployee = response;
-      });
-    } catch (error) {
-      debugPrint('Error fetching assigned employee: $error');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load employee details: $error')),
+      try {
+        _assignedEmployee = widget.employees.firstWhere(
+          (e) => e.id == widget.task.assignedTo,
         );
+      } catch (e) {
+        // Handle case where employee might no longer exist
+        _assignedEmployee = null;
       }
     }
   }
@@ -91,12 +77,15 @@ class _EditTaskModalState extends State<EditTaskModal> {
   }
 
   void _openEmployeeSelector() async {
-    final Map<String, dynamic>? selectedEmployee = await showModalBottomSheet(
+    final UserEntity? selectedEmployee = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (ctx) => FractionallySizedBox(
         heightFactor: 0.7,
-        child: SelectEmployeeModal(initialSelectedEmployee: _assignedEmployee),
+        child: SelectEmployeeModal(
+          employees: widget.employees,
+          initialSelectedEmployee: _assignedEmployee,
+        ),
       ),
     );
 
@@ -107,41 +96,20 @@ class _EditTaskModalState extends State<EditTaskModal> {
     }
   }
 
-  Future<void> _updateTaskInSupabase() async {
-    try {
-      final supabase = locator<SupabaseClient>();
-
-      final updatedTask = {
-        'title': _titleController.text.trim(),
-        'description': _descriptionController.text.trim(),
-        'priority': _selectedPriority,
-        'due_date': _selectedDate?.toIso8601String(),
-        'assigned_to': _assignedEmployee?['id'],
-      };
-
-      final response = await supabase
-          .from('tasks')
-          .update(updatedTask)
-          .eq('id', widget.task.id)
-          .select();
-
-      debugPrint('✅ Task successfully updated: $response');
-    } catch (e) {
-      debugPrint('❌ Error updating task: $e');
-      rethrow;
+  void _submitUpdate() {
+    if (!_formKey.currentState!.validate()) {
+      return;
     }
-  }
 
-  void _submitUpdate() async {
-    final isValid = _formKey.currentState!.validate();
-
-    if (!isValid || _selectedDate == null || _assignedEmployee == null) {
+    if (_selectedPriority == null ||
+        _selectedDate == null ||
+        _assignedEmployee == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Please fill all fields, select a priority, assign an employee, and select a deadline.',
+            'Please select a priority, an employee, and a deadline.',
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.orange,
         ),
       );
       return;
@@ -149,28 +117,17 @@ class _EditTaskModalState extends State<EditTaskModal> {
 
     setState(() => _isSubmitting = true);
 
-    try {
-      await _updateTaskInSupabase();
+    final params = UpdateTaskParams(
+      taskId: widget.task.id,
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+      priority: _selectedPriority!,
+      dueDate: _selectedDate,
+      assignedTo: _assignedEmployee!.id,
+    );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Task successfully updated!')),
-        );
-        Navigator.of(context).pop();
-        context.read<ManagerBloc>().add(ManagerEvent.fetchAllData());
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to update task: $error'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isSubmitting = false);
-    }
+    context.read<ManagerBloc>().add(UpdateTask(params));
+    Navigator.of(context).pop();
   }
 
   @override
@@ -202,14 +159,13 @@ class _EditTaskModalState extends State<EditTaskModal> {
                 controller: _titleController,
                 maxLength: 50,
                 decoration: const InputDecoration(
-                  labelText: 'Task Title',
+                  labelText: 'Task Title*',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.title),
                 ),
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
+                  if (value == null || value.trim().isEmpty)
                     return 'Please enter a task title.';
-                  }
                   return null;
                 },
               ),
@@ -228,9 +184,9 @@ class _EditTaskModalState extends State<EditTaskModal> {
               SizedBox(height: 20.h),
 
               DropdownButtonFormField<String>(
-                initialValue: _selectedPriority,
+                value: _selectedPriority,
                 decoration: const InputDecoration(
-                  labelText: 'Priority',
+                  labelText: 'Priority*',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.flag_outlined),
                 ),
@@ -242,41 +198,30 @@ class _EditTaskModalState extends State<EditTaskModal> {
                     ),
                   );
                 }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedPriority = value;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a priority.';
-                  }
-                  return null;
-                },
+                onChanged: (value) => setState(() => _selectedPriority = value),
+                validator: (value) =>
+                    value == null ? 'Please select a priority.' : null,
               ),
               SizedBox(height: 20.h),
 
               OutlinedButton.icon(
                 onPressed: _isSubmitting ? null : _openEmployeeSelector,
                 icon: const Icon(Icons.person_add_alt_1_outlined),
-                label: const Text('Assign Employee'),
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                label: Text(
+                  _assignedEmployee == null
+                      ? 'Assign Employee*'
+                      : 'Change Assignee',
                 ),
               ),
               SizedBox(height: 8.h),
-
               if (_assignedEmployee != null)
                 Chip(
                   avatar: CircleAvatar(
                     child: Text(
-                      _assignedEmployee!['full_name']
-                          .toString()
-                          .substring(0, 1)
-                          .toUpperCase(),
+                      _assignedEmployee!.fullName.substring(0, 1).toUpperCase(),
                     ),
                   ),
-                  label: Text(_assignedEmployee!['full_name']),
+                  label: Text(_assignedEmployee!.fullName),
                   onDeleted: _isSubmitting
                       ? null
                       : () => setState(() => _assignedEmployee = null),
@@ -284,7 +229,7 @@ class _EditTaskModalState extends State<EditTaskModal> {
               SizedBox(height: 16.h),
 
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8.r),
@@ -294,7 +239,7 @@ class _EditTaskModalState extends State<EditTaskModal> {
                   children: [
                     Text(
                       _selectedDate == null
-                          ? 'No Deadline Selected'
+                          ? 'Select Deadline*'
                           : 'Deadline: ${DateFormat.yMd().format(_selectedDate!)}',
                     ),
                     IconButton(
@@ -323,7 +268,10 @@ class _EditTaskModalState extends State<EditTaskModal> {
                         ? const SizedBox(
                             height: 18,
                             width: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text('Save Changes'),
                   ),

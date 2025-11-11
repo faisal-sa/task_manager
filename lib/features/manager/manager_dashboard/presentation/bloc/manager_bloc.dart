@@ -1,88 +1,114 @@
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/models/profile/user_profile_model.dart';
-import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/models/task/task_model.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/usecase/no_params.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/domain/usecases/add_comment_usecase.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/domain/usecases/create_task_usecase.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/domain/usecases/delete_task_usecase.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/domain/usecases/get_all_employees_usecase.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/domain/usecases/get_all_tasks_usecase.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/domain/usecases/update_task_usecase.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_event.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/manager_dashboard/presentation/bloc/manager_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'manager_event.dart';
-import 'manager_state.dart';
 
 class ManagerBloc extends Bloc<ManagerEvent, ManagerState> {
-  final SupabaseClient client;
+  final GetAllTasksUsecase getAllTasks;
+  final GetAllEmployeesUsecase getAllEmployees;
+  final CreateTaskUsecase createTask;
+  final UpdateTaskUsecase updateTask;
+  final DeleteTaskUsecase deleteTask;
+  final AddCommentUsecase addComment;
 
-  ManagerBloc({required this.client}) : super(ManagerState.initial()) {
-    on<ManagerEvent>((event, emit) async {
-      await event.when(
-        fetchAllData: () async => _fetchAllData(emit, client),
-        deleteTask: (taskId) async {
-          try {
-            await client.from('tasks').delete().eq('id', taskId);
+  ManagerBloc({
+    required this.getAllTasks,
+    required this.getAllEmployees,
+    required this.createTask,
+    required this.updateTask,
+    required this.deleteTask,
+    required this.addComment,
+  }) : super(ManagerInitial()) {
+    on<FetchAllData>(_onFetchAllData);
+    on<CreateTask>(_onCreateTask);
+    on<UpdateTask>(_onUpdateTask);
+    on<DeleteTask>(_onDeleteTask);
+    on<AddComment>(_onAddComment);
+    on<FilterChanged>(_onFilterChanged);
+    on<SearchQueryChanged>(_onSearchQueryChanged);
+  }
 
-            add(const ManagerEvent.fetchAllData());
-          } catch (e) {
-            emit(
-              ManagerState.error(
-                message: 'Failed to delete task: ${e.toString()}',
-              ),
-            );
-          }
-        },
-        filterChanged: (filter) async {
-          state.whenOrNull(
-            loaded: (tasks, employees, currentFilter, searchQuery) => emit(
-              ManagerState.loaded(
-                tasks: tasks,
-                employees: employees,
-                currentFilter: filter,
-              ),
-            ),
-          );
-        },
-        searchQueryChanged: (query) async {
-          state.whenOrNull(
-            loaded: (tasks, employees, currentFilter, searchQuery) => emit(
-              ManagerState.loaded(
-                tasks: tasks,
-                employees: employees,
-                searchQuery: query,
-              ),
-            ),
-          );
-        },
+  Future<void> _onFetchAllData(
+    FetchAllData event,
+    Emitter<ManagerState> emit,
+  ) async {
+    emit(ManagerLoading());
+    final tasksResult = await getAllTasks(NoParams()).run();
+    final employeesResult = await getAllEmployees(NoParams()).run();
+
+    tasksResult.fold((failure) => emit(ManagerError(failure.message)), (tasks) {
+      employeesResult.fold(
+        (failure) => emit(ManagerError(failure.message)),
+        (employees) =>
+            emit(ManagerLoaded(allTasks: tasks, employees: employees)),
       );
     });
   }
-}
 
-void _fetchAllData(Emitter<ManagerState> emit, SupabaseClient client) async {
-  emit(const ManagerState.loading());
-  try {
-    final responses = await Future.wait([
-      client.from('tasks').select().order('created_at', ascending: false),
+  Future<void> _onCreateTask(
+    CreateTask event,
+    Emitter<ManagerState> emit,
+  ) async {
+    final result = await createTask(event.params).run();
+    result.fold(
+      (failure) => emit(ManagerError(failure.message)),
+      (_) => add(FetchAllData()), // Refresh all data on success
+    );
+  }
 
-      client.from('profiles').select('id, full_name').eq('role', 'employee'),
-    ]);
-    final taskResponse = responses[0] as List;
-    final tasks = taskResponse.map((json) => Task.fromJson(json)).toList();
+  Future<void> _onUpdateTask(
+    UpdateTask event,
+    Emitter<ManagerState> emit,
+  ) async {
+    final result = await updateTask(event.params).run();
+    result.fold(
+      (failure) => emit(ManagerError(failure.message)),
+      (_) => add(FetchAllData()), // Refresh all data on success
+    );
+  }
 
-    final employeeResponse = responses[1] as List;
-    final employees = employeeResponse
-        .map((json) => UserProfile.fromJson(json))
-        .toList();
+  Future<void> _onDeleteTask(
+    DeleteTask event,
+    Emitter<ManagerState> emit,
+  ) async {
+    final result = await deleteTask(
+      DeleteTaskParams(taskId: event.taskId),
+    ).run();
+    result.fold(
+      (failure) => emit(ManagerError(failure.message)),
+      (_) => add(FetchAllData()),
+    );
+  }
 
-    emit(ManagerState.loaded(tasks: tasks, employees: employees));
-  } catch (e) {
-    emit(ManagerState.error(message: 'Failed to load data: ${e.toString()}'));
+  Future<void> _onAddComment(
+    AddComment event,
+    Emitter<ManagerState> emit,
+  ) async {
+    final result = await addComment(event.params).run();
+    result.fold(
+      (failure) => emit(ManagerError(failure.message)),
+      (_) => add(FetchAllData()),
+    );
+  }
+
+  void _onFilterChanged(FilterChanged event, Emitter<ManagerState> emit) {
+    if (state is ManagerLoaded) {
+      emit((state as ManagerLoaded).copyWith(currentFilter: event.filter));
+    }
+  }
+
+  void _onSearchQueryChanged(
+    SearchQueryChanged event,
+    Emitter<ManagerState> emit,
+  ) {
+    if (state is ManagerLoaded) {
+      emit((state as ManagerLoaded).copyWith(searchQuery: event.query));
+    }
   }
 }
-
-
-//   Future<void> _deleteTask(String taskId, Emitter<ManagerState> emit) async {
-//     try {
-//       await client.from('tasks').delete().eq('id', taskId);
-//       add(const ManagerEvent.fetchAllData());
-//     } catch (e) {
-//       emit(ManagerState.error(
-//         message: 'Failed to delete task: ${e.toString()}',
-//       ));
-//     }
-//   }
-// }

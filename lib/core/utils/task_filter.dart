@@ -1,16 +1,9 @@
 enum TaskFilter {
-  all,
-  inProgress,
-  completed;
+  all('All'),
+  pending('Pending'),
+  inProgress('In Progress'),
+  completed('Completed');
 
-  String get displayName {
-    switch (this) {
-      case TaskFilter.all:
-        return 'All';
-      case TaskFilter.inProgress:
-        return 'In Progress';
-      case TaskFilter.completed:
-        return 'Completed';
-    }
-  }
+  const TaskFilter(this.displayName);
+  final String displayName;
 }

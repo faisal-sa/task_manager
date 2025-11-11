@@ -63,10 +63,9 @@ final GoRouter router = GoRouter(
         final extras = state.extra as Map<String, dynamic>?;
         final fullName = extras?['fullName'] as String?;
         final avatarUrl = extras?['avatarUrl'] as String?;
+
         return BlocProvider(
-          create: (context) =>
-              ManagerBloc(client: locator<SupabaseClient>())
-                ..add(ManagerEvent.fetchAllData()),
+          create: (context) => locator<ManagerBloc>()..add(FetchAllData()),
           child: ManagerPage(fullName: fullName, avatarUrl: avatarUrl),
         );
       },
