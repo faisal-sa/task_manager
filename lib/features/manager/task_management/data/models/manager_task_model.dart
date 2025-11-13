@@ -23,7 +23,6 @@ class ManagerTaskModel {
     required this.createdAt,
     this.comments = const [],
   });
-
   factory ManagerTaskModel.fromJson(Map<String, dynamic> json) {
     final commentsList =
         (json['task_comments'] as List<dynamic>?)

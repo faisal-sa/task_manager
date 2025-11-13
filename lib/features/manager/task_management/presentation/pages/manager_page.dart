@@ -1,3 +1,4 @@
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/task_management/presentation/cubit/manager_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,9 +8,8 @@ import '../../../../../core/di/get_it.dart';
 import '../../../../../core/services/auth_service.dart';
 import '../../../../../core/utils/task_filter.dart';
 import '../../domain/entities/user_entity.dart';
-import '../bloc/manager_bloc.dart';
-import '../bloc/manager_event.dart';
-import '../bloc/manager_state.dart';
+
+import '../cubit/manager_state.dart';
 import '../widgets/add_task_modal.dart';
 import '../widgets/edit_task_modal.dart';
 import '../widgets/manager_task_card.dart';
@@ -28,9 +28,7 @@ class ManagerPage extends StatelessWidget {
         backgroundColor: Colors.white,
         title: Text("Welcome ${fullName ?? 'Manager'}"),
         actions: [
-          // The Add Task button needs the list of employees from the state,
-          // so we use a BlocBuilder here.
-          BlocBuilder<ManagerBloc, ManagerState>(
+          BlocBuilder<ManagerCubit, ManagerState>(
             builder: (context, state) {
               return IconButton(
                 onPressed: state is ManagerLoaded
@@ -40,12 +38,12 @@ class ManagerPage extends StatelessWidget {
                           context: context,
                           isScrollControlled: true,
                           builder: (_) => BlocProvider.value(
-                            value: BlocProvider.of<ManagerBloc>(context),
+                            value: BlocProvider.of<ManagerCubit>(context),
                             child: AddTaskModal(employees: state.employees),
                           ),
                         );
                       }
-                    : null, // Disable button if not loaded
+                    : null,
                 icon: const Icon(Icons.add_task),
                 tooltip: 'Add New Task',
               );
@@ -70,16 +68,16 @@ class ManagerPage extends StatelessWidget {
         child: Column(
           children: [
             const _SearchField(),
-            BlocBuilder<ManagerBloc, ManagerState>(
+            BlocBuilder<ManagerCubit, ManagerState>(
               builder: (context, state) {
                 if (state is ManagerLoaded) {
                   return _FilterChips(currentFilter: state.currentFilter);
                 }
-                return const SizedBox.shrink(); // Hide filters if not loaded
+                return const SizedBox.shrink();
               },
             ),
             Expanded(
-              child: BlocConsumer<ManagerBloc, ManagerState>(
+              child: BlocConsumer<ManagerCubit, ManagerState>(
                 listener: (context, state) {
                   if (state is ManagerError) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -108,7 +106,7 @@ class ManagerPage extends StatelessWidget {
                     }
                     return RefreshIndicator(
                       onRefresh: () async {
-                        context.read<ManagerBloc>().add(FetchAllData());
+                        context.read<ManagerCubit>().fetchAllData(); //?
                       },
                       child: ListView.builder(
                         itemCount: tasks.length,
@@ -138,7 +136,7 @@ class ManagerPage extends StatelessWidget {
                                 context: context,
                                 isScrollControlled: true,
                                 builder: (_) => BlocProvider.value(
-                                  value: BlocProvider.of<ManagerBloc>(context),
+                                  value: BlocProvider.of<ManagerCubit>(context),
                                   child: EditTaskModal(
                                     task: task,
                                     employees: state.employees,
@@ -151,7 +149,6 @@ class ManagerPage extends StatelessWidget {
                       ),
                     );
                   }
-                  // This will show if the state is ManagerError
                   return const Center(
                     child: Text("An error occurred. Please pull to refresh."),
                   );
@@ -185,7 +182,7 @@ class ManagerPage extends StatelessWidget {
             TextButton(
               child: const Text('Delete', style: TextStyle(color: Colors.red)),
               onPressed: () {
-                context.read<ManagerBloc>().add(DeleteTask(taskId));
+                context.read<ManagerCubit>().deleteTask(taskId);
                 Navigator.of(dialogContext).pop();
               },
             ),
@@ -209,7 +206,7 @@ class _SearchFieldState extends State<_SearchField> {
   @override
   void initState() {
     super.initState();
-    final currentState = context.read<ManagerBloc>().state;
+    final currentState = context.read<ManagerCubit>().state;
     final initialQuery = currentState is ManagerLoaded
         ? currentState.searchQuery
         : '';
@@ -224,7 +221,7 @@ class _SearchFieldState extends State<_SearchField> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ManagerBloc, ManagerState>(
+    return BlocListener<ManagerCubit, ManagerState>(
       listener: (context, state) {
         if (state is ManagerLoaded &&
             _searchController.text != state.searchQuery) {
@@ -236,7 +233,7 @@ class _SearchFieldState extends State<_SearchField> {
         child: TextField(
           controller: _searchController,
           onChanged: (query) {
-            context.read<ManagerBloc>().add(SearchQueryChanged(query));
+            context.read<ManagerCubit>().searchQueryChanged(query);
           },
           decoration: InputDecoration(
             labelText: 'Search by title or assignee...',
@@ -286,7 +283,7 @@ class _FilterChips extends StatelessWidget {
                 selected: isSelected,
                 onSelected: (selected) {
                   if (selected) {
-                    context.read<ManagerBloc>().add(FilterChanged(filter));
+                    context.read<ManagerCubit>().filterChanged(filter);
                   }
                 },
               ),

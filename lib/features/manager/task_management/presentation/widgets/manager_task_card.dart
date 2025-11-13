@@ -1,10 +1,8 @@
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/task_management/presentation/cubit/manager_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-// Assuming your other files are in these locations. Adjust if necessary.
-import '../bloc/manager_bloc.dart';
-import '../bloc/manager_event.dart';
 import '../../domain/entities/manager_task_entity.dart';
 import '../../domain/usecases/add_comment_usecase.dart';
 
@@ -48,7 +46,7 @@ class _ManagerTaskCardState extends State<ManagerTaskCard> {
       taskId: widget.task.id,
       comment: commentText,
     );
-    context.read<ManagerBloc>().add(AddComment(params));
+    context.read<ManagerCubit>().addComment(params);
 
     _commentController.clear();
     FocusScope.of(context).unfocus();

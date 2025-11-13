@@ -5,21 +5,33 @@ import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/
 import 'package:equatable/equatable.dart';
 import 'package:fpdart/fpdart.dart';
 
-class LoginUsecase implements Usecase<UserEntity, LoginParams> {
+class SignupUsecase implements Usecase<void, SignUpParams> {
   final AuthenticationRepository repository;
-  LoginUsecase({required this.repository});
+  SignupUsecase({required this.repository});
 
   @override
-  TaskEither<Failure, UserEntity> call(LoginParams params) {
-    return repository.login(params.email, params.password);
+  TaskEither<Failure, void> call(SignUpParams params) {
+    return repository.signUp(
+      params.email,
+      params.password,
+      params.name,
+      params.role,
+    );
   }
 }
 
-class LoginParams extends Equatable {
+class SignUpParams extends Equatable {
   final String email;
   final String password;
+  final String name;
+  final Role role;
 
-  const LoginParams({required this.email, required this.password});
+  const SignUpParams({
+    required this.name,
+    required this.role,
+    required this.email,
+    required this.password,
+  });
 
   @override
   List<Object?> get props => [email, password];

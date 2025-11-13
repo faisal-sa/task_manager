@@ -1,26 +1,16 @@
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/error/failures.dart';
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/usecase/no_params.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/core/usecase/usecase.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/authentication/domain/entities/user_entity.dart';
 import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/authentication/domain/repositories/authentication_repository.dart';
-import 'package:equatable/equatable.dart';
 import 'package:fpdart/fpdart.dart';
 
-class LoginUsecase implements Usecase<UserEntity, LoginParams> {
+class GetCurrentUserUsecase implements Usecase<UserEntity, NoParams> {
   final AuthenticationRepository repository;
-  LoginUsecase({required this.repository});
+  GetCurrentUserUsecase({required this.repository});
 
   @override
-  TaskEither<Failure, UserEntity> call(LoginParams params) {
-    return repository.login(params.email, params.password);
+  TaskEither<Failure, UserEntity> call(NoParams params) {
+    return repository.getCurrentUser();
   }
-}
-
-class LoginParams extends Equatable {
-  final String email;
-  final String password;
-
-  const LoginParams({required this.email, required this.password});
-
-  @override
-  List<Object?> get props => [email, password];
 }

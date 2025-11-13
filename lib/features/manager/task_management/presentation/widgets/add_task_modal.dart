@@ -1,3 +1,4 @@
+import 'package:bloc_getit_supabase_project_abdualaziz_abbas_abdulaziz/features/manager/task_management/presentation/cubit/manager_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,8 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/create_task_usecase.dart';
-import '../bloc/manager_bloc.dart';
-import '../bloc/manager_event.dart';
+
 import 'select_employee_modal.dart';
 
 class AddTaskModal extends StatefulWidget {
@@ -101,7 +101,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
       dueDate: _selectedDate,
     );
 
-    context.read<ManagerBloc>().add(CreateTask(params));
+    context.read<ManagerCubit>().createTask(params);
     Navigator.of(context).pop();
   }
 
